@@ -265,6 +265,7 @@ const getInterestedCustomers = async (req, res) => {
 };
 
 const getAddedToCartProducts = async (req, res) => {
+    console.log(req)
     try {
         const sellerId = req.params.id;
 

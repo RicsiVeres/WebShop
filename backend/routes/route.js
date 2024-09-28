@@ -34,7 +34,8 @@ const {
 const {
     newOrder,
     getOrderedProductsByCustomer,
-    getOrderedProductsBySeller
+    getOrderedProductsBySeller,
+    getOrderedProducts
 } = require('../controllers/orderController.js');
 
 
@@ -70,6 +71,7 @@ router.put('/CustomerUpdate/:id', cartUpdate);
 
 // Order
 router.post('/newOrder', newOrder);
+router.get('/getOrderedProducts', getOrderedProducts);
 router.get('/getOrderedProductsByCustomer/:id', getOrderedProductsByCustomer);
 router.get('/getOrderedProductsBySeller/:id', getOrderedProductsBySeller);
 

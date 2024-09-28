@@ -181,6 +181,15 @@ export const getCustomers = (id, address) => async (dispatch) => {
     }
 }
 
+export const getOrders = (address) => async (dispatch) => {
+    dispatch(getRequest());
+    try {
+        return await axios.get(`${REACT_APP_BASE_URL}/${address}`);
+    } catch (error) {
+        return error;
+    }
+}
+
 export const getSpecificProducts = (id, address) => async (dispatch) => {
     dispatch(getRequest());
     try {

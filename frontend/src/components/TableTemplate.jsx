@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, styled, tableCellClasses } from '@mui/material';
 
-const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
+const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows, onRowClick }) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     return (
@@ -9,7 +9,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
             <TableContainer>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead>
-                        <StyledTableRow>
+                        <StyledTableRow >
                             {columns.map((column) => (
                                 <StyledTableCell
                                     key={column.id}
@@ -29,7 +29,7 @@ const TableTemplate = ({ buttonHaver: ButtonHaver, columns, rows }) => {
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((row) => {
                                 return (
-                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                                    <StyledTableRow hover role="checkbox" tabIndex={-1} key={row.id}  onClick={() => onRowClick(row)}>
                                         {columns.map((column) => {
                                             const value = row[column.id];
                                             return (
