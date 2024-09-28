@@ -47,6 +47,34 @@ const getOrderedProductsByCustomer = async (req, res) => {
     }
 };
 
+const getOrderedProducts = async (req, res) => {
+    try {
+        const orders = await Order.aggregate([
+            {
+                $lookup: {
+                    from: 'customers', // a 'customers' tábla neve
+                    localField: 'buyer', // 'orders' táblából a buyer mező
+                    foreignField: '_id', // 'customers' táblában az azonosító mező
+                    as: 'buyerDetails' // a vásárlói adatok ebbe a mezőbe kerülnek
+                }
+            },
+            {
+                $project: {
+                    "buyerDetails.password": 0 // a 'password' mező kizárása
+                }
+            }
+        ]);
+
+        if (orders.length > 0) {
+            res.json(orders); // visszaküldjük az egyesített adatokat a kliensnek
+        } else {
+            res.send({ message: "Nincsenek megrendelések" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 const getOrderedProductsBySeller = async (req, res) => {
     try {
         const sellerId = req.params.id;
@@ -80,6 +108,7 @@ const getOrderedProductsBySeller = async (req, res) => {
 
 module.exports = {
     newOrder,
+    getOrderedProducts,
     getOrderedProductsByCustomer,
     getOrderedProductsBySeller
 };

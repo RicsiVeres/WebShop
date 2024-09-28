@@ -6,6 +6,7 @@ import { BlueButton, GreenButton } from "../../../utils/buttonStyles";
 import TableTemplate from "../../../components/TableTemplate";
 import { useNavigate } from "react-router-dom";
 
+
 const AddedToCartSection = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch();
@@ -33,6 +34,7 @@ const AddedToCartSection = () => {
             productID: product.productID,
         }))
         : [];
+
 
     const ProductsButtonHaver = ({ row }) => {
         return (
@@ -79,4 +81,4 @@ const AddedToCartSection = () => {
     )
 }
 
-export default AddedToCartSection
+export default AddedToCartSection;

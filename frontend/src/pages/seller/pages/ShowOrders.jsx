@@ -30,10 +30,10 @@ const ShowOrders = () => {
         <OutForDeliverySection />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        0 Completed Orders
+        0 Completed Orders <br></br> létre kell hozni még
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
-        0 Cancelled Orders
+        0 Cancelled Orders<br></br> létre kell hozni még
       </CustomTabPanel>
     </Box>
   );
