@@ -9,8 +9,6 @@ import { NewtonsCradle } from '@uiball/loaders';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
-  const adURL =
-    'https://rukminim1.flixcart.com/flap/464/708/image/1f03e99f6dc9f7a6.jpg?q=70';
 
   const dispatch = useDispatch();
 
@@ -72,17 +70,6 @@ const Home = () => {
             </>
           ) : (
             <>
-            
-            {/*
-              <Component>
-                <LeftComponent>
-                </LeftComponent>
-                  
-                  <RightComponent>
-                    <img src={adURL} alt="" style={{ width: 217 }} />
-                    </RightComponent>
-              </Component>
-               */}   
               <Slide products={productData} title="Akciósak" />
               <Slide products={productData} title="Legkellendőbbek" />
               <Slide products={productData} title="Neked Ajánlott" />
