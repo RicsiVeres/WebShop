@@ -272,9 +272,8 @@ export const productDataList = [
 ];
 
 export const bannerData = [
-  { _id: 1, url: 'https://rukminim1.flixcart.com/flap/3376/560/image/8464e4d9a75b909a.jpg?q=50' },
-  { _id: 2, url: 'https://rukminim1.flixcart.com/flap/3376/560/image/a5320d3f852657e8.jpg?q=50' },
-  { _id: 3, url: 'https://rukminim1.flixcart.com/flap/3376/560/image/5df65ad101e18dbf.jpg?q=50' },
-  { _id: 4, url: 'https://rukminim1.flixcart.com/flap/3376/560/image/8a89ee09acc1a9e5.jpg?q=50' },
-  { _id: 5, url: 'https://rukminim1.flixcart.com/flap/3376/560/image/ed12b7707a04473c.jpg?q=50' },
+  { _id: 1, url: 'https://bbdu.ac.in/wp-content/uploads/2020/05/banner-background-5.jpg' },
+  { _id: 2, url: 'https://marketplace.canva.com/EAENvp21inc/1/0/1600w/canva-simple-work-linkedin-banner-qt_TMRJF4m0.jpg' },
+  { _id: 3, url: 'https://static.vecteezy.com/system/resources/thumbnails/005/720/479/small_2x/banner-abstract-background-board-for-text-and-message-design-modern-free-vector.jpg' },
+
 ]

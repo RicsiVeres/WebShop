@@ -75,6 +75,30 @@ const getOrderedProducts = async (req, res) => {
     }
 }
 
+    const changeOrderStatus = async (req, res) => {
+        try {
+            const orderId = req.params.id;
+            const newStatus = req.body.orderStatus; // Az új státuszt a kliens küldi a kérés törzsében
+
+            if (!newStatus) {
+                console.log(`Order ID: ${orderId}, New Status: ${newStatus}`);
+             return res.status(400).send('Order status is required');
+
+            }
+
+            const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus: newStatus }, { new: true });
+        
+            if (!updatedOrder) {
+                return res.status(404).send('Order not found');
+            }
+
+            res.status(200).json(updatedOrder);
+        } catch (error) {
+            res.status(500).send('Error updating order status');
+        }
+    };
+
+
 const getOrderedProductsBySeller = async (req, res) => {
     try {
         const sellerId = req.params.id;
@@ -110,5 +134,6 @@ module.exports = {
     newOrder,
     getOrderedProducts,
     getOrderedProductsByCustomer,
-    getOrderedProductsBySeller
+    getOrderedProductsBySeller,
+    changeOrderStatus
 };

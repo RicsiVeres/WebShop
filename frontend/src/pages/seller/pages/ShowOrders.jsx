@@ -27,13 +27,13 @@ const ShowOrders = () => {
         <AddedToCartSection />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <OutForDeliverySection />
+        <OutForDeliverySection status="Processing"/> 
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        0 Completed Orders <br></br> létre kell hozni még
+        <OutForDeliverySection status="Succes" /> 
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
-        0 Cancelled Orders<br></br> létre kell hozni még
+        <OutForDeliverySection status="Canceled"/> 
       </CustomTabPanel>
     </Box>
   );

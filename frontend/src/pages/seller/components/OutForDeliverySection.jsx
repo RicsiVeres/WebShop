@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Zoom } from "@mui/material"; // Import Alert
 import { useDispatch, useSelector } from "react-redux";
 import { getSpecificProducts } from "../../../redux/userHandle";
 import axios from 'axios';
@@ -38,26 +38,26 @@ const OrderDetailsModal = ({ open, handleClose, orderDetails }) => {
     );
 };
 
-const OutForDeliverySection = () => {
+const OutForDeliverySection = (props) => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(''); // Új állapotváltozó a sikeres üzenethez
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { currentUser, responseSpecificProducts } = useSelector(state => state.user);
 
-    // Fetch ordered products
-    useEffect(() => {
-        const fetchOrderedProducts = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/getOrderedProducts`);
-                setOrders(response.data);
-            } catch (error) {
-                setError(`Hiba az adatok lekérésekor: ${error.message}`);
-            }
-        };
+    const fetchOrderedProducts = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/getOrderedProducts`);
+            setOrders(response.data);
+        } catch (error) {
+            setError(`Hiba az adatok lekérésekor: ${error.message}`);
+        }
+    };
 
+    useEffect(() => {
         fetchOrderedProducts();
         dispatch(getSpecificProducts(currentUser._id, "getOrderedProductsBySeller"));
     }, [dispatch, currentUser._id]);
@@ -81,15 +81,17 @@ const OutForDeliverySection = () => {
     ];
 
     // Create rows for the table
-    const orderedRows = orders.map(order => ({
-        name: order.buyerDetails.map(num => num.name).join(', '),
-        email: order.buyerDetails.map(num => num.email).join(', '),
-        phone: order.shippingData.phoneNo,
-        address: `${order.shippingData.address}, ${order.shippingData.pinCode}, ${order.shippingData.city}, ${order.shippingData.state}, ${order.shippingData.country}`,
-        price: `${formatNumber(order.totalPrice)} Ft`,
-        date: formatDate(order.createdAt),
-        id: order._id,
-    }));
+    const orderedRows = orders
+        .filter(order => order.orderStatus === props.status)  // Csak a "Processing" státuszú rendelések
+        .map(order => ({
+            name: order.buyerDetails.map(num => num.name).join(', '),
+            email: order.buyerDetails.map(num => num.email).join(', '),
+            phone: order.shippingData.phoneNo,
+            address: `${order.shippingData.address}, ${order.shippingData.pinCode}, ${order.shippingData.city}, ${order.shippingData.state}, ${order.shippingData.country}`,
+            price: `${formatNumber(order.totalPrice)} Ft`,
+            date: formatDate(order.createdAt),
+            id: order._id,
+        }));
 
     // Handle row click to open modal with full order details
     const handleRowClick = (row) => {
@@ -103,16 +105,70 @@ const OutForDeliverySection = () => {
         setSelectedOrder(null);
     };
 
-    const handleReject = (row, event) => {
-        event.stopPropagation(); // Prevent the row click event from firing
-        console.log(`Order ${row.id} elutasítva`);
-        // Add your rejection logic here
-    };
+    const handleExecuteSucces = async (row, event) => {
+        event.stopPropagation();
+        try {
+            const response = await fetch(`http://localhost:5000/orders/${row.id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderStatus: "Succes" }), 
+            });
 
-    const handleExecute = (row, event) => {
-        event.stopPropagation(); // Prevent the row click event from firing
-        console.log(`Order ${row.id} végrehajtva`);
-        // Add your execution logic here
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`Hiba történt a rendelés frissítésekor: ${errorMessage}`);
+            }
+
+            const updatedOrder = await response.json();
+            console.log(`Order ${updatedOrder.id} végrehajtva és státusza frissítve: ${updatedOrder.orderStatus}`);
+            fetchOrderedProducts();
+
+            // Sikeres üzenet beállítása
+            setSuccessMessage('A rendelés státusza sikeresen frissítve!');
+
+            // Eltűntetni az üzenetet 3 másodperc múlva
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+
+        } catch (error) {
+            console.error('Hiba történt:', error);
+        }
+    };
+    
+    const handleExecuteCanceled = async (row, event) => {
+        event.stopPropagation();
+        try {
+            const response = await fetch(`http://localhost:5000/orders/${row.id}/status`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderStatus: "Canceled" }),
+            });
+
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(`Hiba történt a rendelés frissítésekor: ${errorMessage}`);
+            }
+
+            const updatedOrder = await response.json();
+            console.log(`Order ${updatedOrder.id} végrehajtva és státusza frissítve: ${updatedOrder.orderStatus}`);
+            fetchOrderedProducts();
+
+            // Sikeres üzenet beállítása
+            setSuccessMessage('A rendelés státusza sikeresen frissítve!');
+
+            // Eltűntetni az üzenetet 3 másodperc múlva
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
+
+        } catch (error) {
+            console.error('Hiba történt:', error);
+        }
     };
 
     const ProductsButtonHaver = ({ row }) => (
@@ -122,7 +178,7 @@ const OutForDeliverySection = () => {
                 color="error" 
                 size="small" 
                 startIcon={<DeleteIcon />} 
-                onClick={(event) => handleReject(row, event)} // Pass the event
+                onClick={(event) => handleExecuteCanceled(row, event)} // Pass the event
             >
                 Elutasít
             </Button>
@@ -132,7 +188,7 @@ const OutForDeliverySection = () => {
                 size="small" 
                 endIcon={<SendIcon />} 
                 style={{ marginLeft: '12px' }} 
-                onClick={(event) => handleExecute(row, event)} // Pass the event
+                onClick={(event) => handleExecuteSucces(row, event)} // Pass the event
             >
                 Végrehajt
             </Button>
@@ -140,7 +196,21 @@ const OutForDeliverySection = () => {
     );
 
     return (
-        <Box sx={{ padding: 2 }}>
+        <Box sx={{ padding: 2, position: 'relative' }}> {/* Position relative to contain the alert */}
+            {successMessage && ( // Sikeres üzenet
+                <Alert
+                severity="success"
+                sx={{
+                    position: 'absolute',
+                    top: -35,
+                    right: 16,
+                    fontSize: '1.1rem', // Megnövelt betűméret
+                    padding: '12px 20px', // Növelt padding
+                }}
+            >
+                {successMessage}
+            </Alert>
+            )}
             {responseSpecificProducts ? (
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
                     <Button
@@ -154,7 +224,7 @@ const OutForDeliverySection = () => {
             ) : (
                 <>
                     <Typography variant="h5" gutterBottom>
-                        Termékek listája:
+                        Megrendelések:
                     </Typography>
                     {error && <Typography color="error">{error}</Typography>}
                     <TableTemplate
