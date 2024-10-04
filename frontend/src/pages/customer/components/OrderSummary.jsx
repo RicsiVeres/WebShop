@@ -80,7 +80,7 @@ const OrderSummary = ({ handleNext, handleBack }) => {
                         {cartDetails.map((product, index) => (
                             <ListItem key={index} sx={{ py: 1, px: 0 }}>
                                 <ListItemText primary={product.productName} secondary={`Quantity: ${product.quantity}`} />
-                                <Typography variant="body2">{`₹${product.quantity * product.price.mrp}`}</Typography>
+                                <Typography variant="body2">{`${product.quantity * product.price.mrp} ft`}</Typography>
                             </ListItem>
                         ))}
                         <ListItem sx={{ py: 1, px: 0 }}>

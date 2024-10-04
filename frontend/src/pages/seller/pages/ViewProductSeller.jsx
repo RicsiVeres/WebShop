@@ -126,8 +126,8 @@ const ViewProductSeller = () => {
                   <ProductInfo>
                     <ProductName>{productDetails && productDetails.productName}</ProductName>
                     <PriceContainer>
-                      <PriceCost>₹{productDetails && productDetails.price && productDetails.price.cost}</PriceCost>
-                      <PriceMrp>₹{productDetails && productDetails.price && productDetails.price.mrp}</PriceMrp>
+                      <PriceCost>{productDetails && productDetails.price && productDetails.price.cost}ft</PriceCost>
+                      <PriceMrp>{productDetails && productDetails.price && productDetails.price.mrp}ft</PriceMrp>
                       <PriceDiscount>{productDetails && productDetails.price && productDetails.price.discountPercent}% off</PriceDiscount>
                     </PriceContainer>
                     <Description>{productDetails && productDetails.description}</Description>
