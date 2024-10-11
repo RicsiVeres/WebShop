@@ -1,61 +1,26 @@
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Container, Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
+import { Button, Container, Divider, Grid, IconButton, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import styled from 'styled-components';
-import emptyCart from "../../../assets/cartimg.png"
+import emptyCart from "../../../assets/cartimg.png";
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { addToCart, removeAllFromCart, removeFromCart } from '../../../redux/userSlice';
-import { BasicButton, LightPurpleButton } from '../../../utils/buttonStyles';
 import { useNavigate } from 'react-router-dom';
-import { updateCustomer } from '../../../redux/userHandle';
 
 const Cart = ({ setIsCartOpen }) => {
-
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
-
     const { currentUser } = useSelector((state) => state.user);
-
-    let cartDetails = currentUser.cartDetails;
-
-    const handleRemoveFromCart = (product) => {
-        dispatch(removeFromCart(product));
-    };
-
-    const handleAddToCart = (product) => {
-        dispatch(addToCart(product));
-    };
-
-    const handleRemoveAllFromCart = () => {
-        dispatch(removeAllFromCart());
-    };
+    const cartDetails = currentUser.cartDetails;
 
     const totalQuantity = cartDetails.reduce((total, item) => total + item.quantity, 0);
     const totalOGPrice = cartDetails.reduce((total, item) => total + (item.quantity * item.price.mrp), 0);
     const totalNewPrice = cartDetails.reduce((total, item) => total + (item.quantity * item.price.cost), 0);
 
-    const productViewHandler = (productID) => {
-        navigate("/product/view/" + productID)
-        setIsCartOpen(false)
-    }
-
-    const productBuyingHandler = (id) => {
-        console.log(currentUser);
-        dispatch(updateCustomer(currentUser, currentUser._id));
-        setIsCartOpen(false)
-        navigate(`/product/buy/${id}`)
-    }
-
-    const allProductsBuyingHandler = () => {
-        console.log(currentUser);
-        dispatch(updateCustomer(currentUser, currentUser._id));
-        setIsCartOpen(false)
-        navigate("/Checkout")
-    }
-
     const priceContainerRef = useRef(null);
+    const firstCartItemRef = useRef(null);
 
     const handleScrollToBottom = () => {
         if (priceContainerRef.current) {
@@ -63,225 +28,214 @@ const Cart = ({ setIsCartOpen }) => {
         }
     };
 
-    const firstCartItemRef = useRef(null);
-
     const handleScrollToTop = () => {
         if (firstCartItemRef.current) {
             firstCartItemRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     };
+
+    // Handle change of quantity (can decrease down to 1)
+    const handleQuantityChange = (item, newQuantity) => {
+        if (newQuantity > 0) {
+            // If quantity is increased, add to the cart
+            if (newQuantity > item.quantity) {
+                dispatch(addToCart({ ...item, quantity: 1 }));
+            } else if (newQuantity < item.quantity) {
+                // If quantity is decreased, remove one item from the cart
+                dispatch(removeFromCart(item));
+            }
+        } else {
+            // If the quantity is 0 or less, remove the item from the cart
+            dispatch(removeFromCart(item));
+        }
+    };
+
     return (
         <StyledContainer>
             <TopContainer>
-                <LightPurpleButton onClick={() => {
-                    setIsCartOpen(false)
-                }}>
-                    <KeyboardDoubleArrowLeftIcon /> Vásárlás folytatása
-                </LightPurpleButton>
-                {cartDetails.length > 0 && (
-                    <IconButton
-                        sx={{ backgroundColor: "#3a3939", color: "white" }}
-                        onClick={handleScrollToTop}
-                    >
-                        <KeyboardDoubleArrowUpIcon />
-                    </IconButton>
-                )}
+                <Button onClick={() => setIsCartOpen(false)} sx={{color:"#DB4444", border:"1px solid #DB4444"}}>
+                    <KeyboardDoubleArrowLeftIcon /> Vissza
+                </Button>
             </TopContainer>
             {cartDetails.length === 0 ? (
                 <CartImage src={emptyCart} />
             ) : (
-                <CardGrid container spacing={2}>
-                    {cartDetails.map((data, index) => (
-                        <Grid
-                            item xs={12}
-                            key={index}
-                            ref={index === 0 ? firstCartItemRef : null}
+                <>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Termék</TableCell>
+                                    <TableCell>Ár</TableCell>
+                                    <TableCell>Mennyiség</TableCell>
+                                    <TableCell>Végösszeg</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {cartDetails.map((data, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell>
+                                            <Grid container alignItems="center" spacing={2}>
+                                                <Grid item>
+                                                    <ProductImage src={data.productImage} alt={data.productName} />
+                                                </Grid>
+                                                <Grid item>
+                                                    <Typography variant="body1">{data.productName}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </TableCell>
+                                        <TableCell>{data.price.mrp} Ft</TableCell>
+                                        <TableCell>
+                                            {/* Quantity Control using MUI IconButton */}
+                                            <QuantityControl>
+                                                <IconButton 
+                                                    onClick={() => handleQuantityChange(data, data.quantity - 1)} 
+                                                    disabled={data.quantity <= 0}  // Disable the minus button when quantity is 1
+                                                >
+                                                    <RemoveIcon />
+                                                </IconButton>
+                                                <Typography variant="body1">{data.quantity}</Typography>
+                                                <IconButton 
+                                                    onClick={() => handleQuantityChange(data, data.quantity + 1)}
+                                                >
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </QuantityControl>
+                                        </TableCell>
+                                        <TableCell>{data.price.cost * data.quantity} Ft</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    <StyledSummaryBox ref={priceContainerRef}>
+                        <SummaryTitle>Összegzés</SummaryTitle>
+                        <Divider />
+                        <SummaryRow>
+                            <Typography variant="body1">Teljes Össz.:</Typography>
+                            <Typography variant="body1">{totalOGPrice} Ft</Typography>
+                        </SummaryRow>
+                        <SummaryRow>
+                            <Typography variant="body1">Szállítás:</Typography>
+                            <Typography variant="body1">0 Ft</Typography> {/* Ha van szállítási költség, itt beállíthatod */}
+                        </SummaryRow>
+                        <SummaryRow>
+                            <Typography variant="body1">Kedvezmény:</Typography>
+                            <Typography variant="body1">{totalOGPrice - totalNewPrice} Ft</Typography>
+                        </SummaryRow>
+                        <SummaryRow>
+                            <Divider />
+                        </SummaryRow>
+                        <SummaryRow>
+                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>Teljes összeg:</Typography>
+                            <Typography variant="body1" style={{ fontWeight: 'bold' }}>{totalNewPrice} Ft</Typography>
+                        </SummaryRow>
+                        <Divider />
+                        <OrderButton
+                            variant="contained"
+                            onClick={() => navigate("/Checkout")}
+                            sx={{backgroundColor:"#DB4444", maxWidth:"12rem", display:"flex", alignItems:"end"}}
                         >
-                            <CartItem>
-                                <ProductImage src={data.productImage} />
-                                <ProductDetails>
-                                    <Typography variant="h6">
-                                        {data.productName}
-                                    </Typography>
-                                    <Typography variant="subtitle2">
-                                        Eredeti Ár: {data.price.mrp}ft 
-                                    </Typography>
-                                    <Typography variant="subtitle2">
-                                        Kedvezmény: {data.price.discountPercent}% 
-                                    </Typography>
-                                    <Typography variant="subtitle2">
-                                        Végső Ár: {data.price.cost}ft
-                                    </Typography>
-                                    <Typography variant="subtitle2">
-                                        Mennyiség: {data.quantity}
-                                    </Typography>
-                                    <Typography variant="subtitle2">
-                                        Összesen: {data.quantity * data.price.cost}ft
-                                    </Typography>
-                                    <ButtonContainer>
-                                        <Button
-                                            variant="outlined"
-                                            color="error"
-                                            onClick={() => handleRemoveFromCart(data)}
-                                        >
-                                            -1
-                                        </Button>
-                                        <Button
-                                            variant="outlined"
-                                            color="success"
-                                            onClick={() => handleAddToCart(data)}
-                                        >
-                                            +1
-                                        </Button>
-                                    </ButtonContainer>
-                                    <ButtonContainer>
-                                        <BasicButton
-                                            sx={{ mt: 2 }}
-                                            onClick={() => productViewHandler(data._id)}
-                                        >
-                                            Megnéz
-                                        </BasicButton>
-                                        <Button
-                                            variant="contained"
-                                            color="success"
-                                            sx={{ mt: 2 }}
-                                            onClick={() => productBuyingHandler(data._id)}
-                                        >
-                                            Vásárlás
-                                        </Button>
-                                    </ButtonContainer>
-                                </ProductDetails>
-                            </CartItem>
-                        </Grid>
-                    ))}
-                    <StyledPaper ref={priceContainerRef}>
-                        <Title>
-                            Leirás
-                        </Title>
-                        <Divider sx={{ my: 1 }} />
-                        <DetailsContainer>
-                            Ár ({totalQuantity} db) = {totalOGPrice}ft
-                            <br /><br />
-                            Kedvezmény = {totalOGPrice - totalNewPrice}ft
-                            <Divider sx={{ my: 1 }} />
-                            Teljes összeg = {totalNewPrice}ft
-                        </DetailsContainer>
-                        <Divider sx={{ my: 1, mb: 4 }} />
-                        {cartDetails.length > 0 && (
-                            <Button
-                                variant="contained"
-                                color="success"
-                                onClick={allProductsBuyingHandler}
-                            >
-                                Megrendelés
-                            </Button>
-                        )}
-                    </StyledPaper>
-                </CardGrid>
+                            Megrendelés
+                        </OrderButton>
+                    </StyledSummaryBox>
+                </>
             )}
-
-            {cartDetails.length > 0 && (
-                <BottomContainer>
-                    <Button
-                        variant="contained"
-                        color="success"
-                        onClick={handleScrollToBottom}>
-                        ez majd valamit fog csinálni
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleRemoveAllFromCart}
-                    >
-                        Összes Eltávolítása
-                    </Button>
-                </BottomContainer>
-            )}
-
         </StyledContainer>
     );
 };
 
-export default Cart;
-
 const StyledContainer = styled(Container)`
   padding: 16px;
+  background-color:  #F5F5F5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #f8f8f8;
+  gap: 16px;
 `;
 
 const TopContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
+  align-items: center;
+  background-color: #FFFFFF;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+`;
+
+const StyledSummaryBox = styled(Paper)`
   padding: 16px;
-  background-color: #f8f8f8;
-  z-index:1;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  background-color: #363738;
+  margin: 1rem 8%;
 `;
 
-const StyledPaper = styled(Paper)`
-  padding: 26px;
-  display: flex;
-  margin-top: 2rem;
-  flex-direction: column;
-  height: 30vh;
-`;
-
-const CardGrid = styled(Grid)`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Title = styled.p`
+const SummaryTitle = styled.h3`
+  margin: 0;
   font-size: 1.25rem;
+  font-weight: 600;
+  color: #363738;
 `;
 
-const DetailsContainer = styled.div`
-  margin-top: 1rem;
-`;
-
-const CartItem = styled.div`
+const SummaryRow = styled.div`
   display: flex;
-  align-items: center;
-  padding: 12px;
-  background-color: #f5f5f5;
-  border-radius: 4px;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 4px 0;
+  font-size: 1rem;
 `;
 
-const CartImage = styled.img`
- width: 100%
+const OrderButton = styled(Button)`
+  background-color: #DB4444;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  margin-top: 16px;
+  &:hover {
+    background-color: #E07575;
+  }
+`;
+
+const ActionButton = styled(Button)`
+  background-color: #DB4444;
+  color: white;
+  width: 48%;
+  padding: 12px;
+  margin-top: 16px;
+  &:hover {
+    background-color: #E07575;
+  }
 `;
 
 const ProductImage = styled.img`
-  width: 100px;
-  height: auto;
-  margin-right: 16px;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
 `;
 
-const ProductDetails = styled.div`
-  flex-grow: 1;
+const QuantityControl = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
 `;
 
 const BottomContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  position: sticky;
-  bottom: 0;
-  padding: 16px;
-  background-color: #f8f8f8;
+  margin-top: 20px;
 `;
+
+const CartImage = styled.img`
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+`;
+
+export default Cart;

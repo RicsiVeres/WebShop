@@ -14,6 +14,7 @@ import { FavoriteBorder as FavoriteBorderIcon } from '@mui/icons-material';
 import { Person2Outlined as  Person2OutlinedIcon} from '@mui/icons-material';
 import { ShoppingCartOutlined as   ShoppingCartOutlinedIcon} from '@mui/icons-material';
 import { ContactPageOutlined as  ContactPageOutlinedIcon  } from '@mui/icons-material';
+import { ShoppingCart } from '@mui/icons-material';
 
 
 const Navbar = () => {
@@ -105,9 +106,11 @@ const Navbar = () => {
         <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Home</Button>
         <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Contact</Button>
         <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>About</Button>
-        {currentRole === "null" && (
+        {currentRole == "Customer" ? 
+            ""
+                :
             <Button onClick={() => navigate("/Customerlogin")} sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Sign Up</Button>
-        )}
+        }
 
         
 
@@ -133,7 +136,9 @@ const Navbar = () => {
             <FavoriteBorderIcon  sx={{ color: "#000000" }}/>
         </IconButton>
         <IconButton>
-          <ShoppingCartOutlinedIcon sx={{ color: "#000000" }}  />
+        <Badge badgeContent={totalQuantity} color="error">
+          <ShoppingCartOutlinedIcon sx={{ color: "#000000" }} onClick={handleOpenCart} />
+        </Badge>
         </IconButton>
         <IconButton>
             <Box sx={{ flexGrow: 0, display: 'flex' }}>
@@ -142,7 +147,7 @@ const Navbar = () => {
                                 <IconButton
                                     onClick={handleOpenUserMenu}
                                 >
-                                    <Person2OutlinedIcon sx={{ color: "#000000", fontSize: "xl" }}  onClick={handleOpenCart}/>
+                                    <Person2OutlinedIcon sx={{ color: "#000000", fontSize: "xl" }}  />
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -189,7 +194,24 @@ const Navbar = () => {
         </IconButton>
       </Box>
       )}
-      
+      {
+                isCartOpen &&
+                <Drawer
+                    anchor="right"
+                    open={isCartOpen}
+                    onClose={handleCloseCart}
+                    sx={{
+                        width: '45vw',
+                        flexShrink: 0,
+                        '& .MuiDrawer-paper': {
+                            width: '45vw',
+                            boxSizing: 'border-box',
+                        },
+                    }}
+                >
+                    <Cart setIsCartOpen={setIsCartOpen} />
+                </Drawer>
+            }
     </Toolbar>
   </Container>
 </AppBar>
