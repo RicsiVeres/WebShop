@@ -44,9 +44,11 @@ const Search = () => {
 
 const SearchContainer = styled(Box)`
   border-radius: 2px;
-  margin-left: 10px;
+  margin-left: 10rem;
+  margin-right: 2rem;
   width: 38%;
-  background-color: #fff;
+  background-color: #F5F5F5;
+  max-width: 20vw;
   display: flex;
 `;
 

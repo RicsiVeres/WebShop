@@ -1,0 +1,34 @@
+:root {
+    --Primary: #FFFFFF;
+    --Primary1: #363738;
+    --Secondary: #F5F5F5;
+    --Secondary1: #FEFAF1;
+    --BG: #FFFFFF;
+    --Text: #FAFAFA;
+    --Text1: #7D8184;
+    --Text2: #000000;
+    --Button: #000000;
+    --Secondary2: #DB4444;
+    --Button1: #00FF66;
+    --Button2: #DB4444;
+    --HoverButton: #E07575;
+    --HoverButton1: #A0BCE0;
+}
+
+.container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.container ul {
+    display: flex;
+    text-decoration: none;
+    text-align: center;
+    justify-content: center;
+    
+}
+.container ul li {
+    display: flex;
+    text-decoration: none;
+    margin: auto 1rem;
+}
