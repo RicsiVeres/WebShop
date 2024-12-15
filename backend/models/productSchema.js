@@ -1,62 +1,74 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
-    {
-        productName: {
-            type: String
+  {
+    productName: {
+      type: String,
+    },
+    price: {
+      mrp: {
+        type: Number,
+      },
+      cost: {
+        type: Number,
+      },
+      discountPercent: {
+        type: Number,
+      },
+    },
+    subcategory: {
+      type: String,
+    },
+    productImage: {
+      type: String,
+    },
+    category: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    tagline: {
+      type: String,
+    },
+    quantity: {
+      type: Number,
+      default: 1,
+    },
+    reviews: [
+      {
+        rating: {
+          type: Number,
         },
-        price: {
-            mrp: {
-                type: Number
-            },
-            cost: {
-                type: Number
-            },
-            discountPercent: {
-                type: Number
-            }
+        comment: {
+          type: String,
         },
-        subcategory: {
-            type: String
+        reviewer: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "customer",
         },
-        productImage: {
-            type: String
+        date: {
+          type: Date,
+          default: Date.now,
         },
-        category: {
-            type: String
+      },
+    ],
+    seller: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "seller",
+    },
+    colors: [
+      {
+        name: {
+          type: String, 
         },
-        description: {
-            type: String
+        hex: {
+          type: String, // in hex #aaaaaaaa
         },
-        tagline: {
-            type: String
-        },
-        quantity: {
-            type: Number,
-            default: 1
-        },
-        reviews: [
-            {
-                rating: {
-                    type: Number,
-                },
-                comment: {
-                    type: String,
-                },
-                reviewer: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "customer",
-                },
-                date: {
-                    type: Date,
-                    default: Date.now,
-                },
-            },
-        ],
-        seller: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'seller'
-        },
-    }, { timestamps: true });
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("product", productSchema)
+module.exports = mongoose.model("product", productSchema);
