@@ -6,17 +6,18 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import StarIcon from '@mui/icons-material/Star';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
 import { useNavigate } from 'react-router-dom';
 import {Rating} from "@mui/material";
 import React from "react";
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
+    const reviews = product.reviews || [];
+
     const discount = Math.round(
         ((product.price.mrp - product.price.cost) / product.price.mrp) * 100
     );
+
     const getavgRating = (reviews) => {
         if (!reviews || reviews.length === 0) {
             return 0; // Ha nincs értékelés, az átlag 0
@@ -134,9 +135,9 @@ const ProductCard = ({ product }) => {
 
                 {/* New Rating */}
                 <Stack direction="row" alignItems="center" spacing={0.5}>
-                    <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(product.reviews)} precision={0.5}  />
+                    <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(reviews)} precision={0.5}  />
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        ({product.reviews.length})
+                        ({reviews.length})
                     </Typography>
                 </Stack>
 
