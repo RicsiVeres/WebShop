@@ -46,7 +46,7 @@ const Navbar = () => {
     };
 
     return (
-        <AppBar position="sticky" sx={{ backgroundColor: "#FFFFFF", boxShadow: "none", padding: ".5rem 2.5rem" }}>
+        <AppBar position="sticky" sx={{ backgroundColor: "#FFFFFF", boxShadow: "none", padding: ".5rem 2.5rem", maxWidth: "1170px", margin: "0 auto" }}>
             <Toolbar disableGutters>
                 {/* Logo */}
                 <Typography
@@ -69,11 +69,13 @@ const Navbar = () => {
                     <Button sx={menuButtonStyle}>Home</Button>
                     <Button sx={menuButtonStyle}>Contact</Button>
                     <Button sx={menuButtonStyle}>About</Button>
-                    {currentRole !== "Customer" && (
+                    {currentRole !== "Customer" ? (
                         <Button onClick={() => navigate("/Customerlogin")} sx={menuButtonStyle}>
                             Sign Up
                         </Button>
-                    )}
+                    ):
+                        <Button sx={menuButtonStyle} onClick={() => navigate("/Orders")}>Rendeléseim</Button>
+                    }
                     <Search sx={searchBarStyle} />
                     {currentRole === "Customer" && (
                         <Box sx={{ display: 'flex', gap: "1rem", alignItems: 'center' }}>

@@ -4,8 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Carousel from 'react-multi-carousel';
 import "react-multi-carousel/lib/styles.css";
 import "./style/pages.css";
+import ProductCard from "./customer/components/ProductCard";
 
-const Slide = ({ products, title }) => {
+const Slide = ({ products, title, slidecategory }) => {
     const navigate = useNavigate()
 
     const formatNumber = (num) => {
@@ -14,7 +15,11 @@ const Slide = ({ products, title }) => {
 
     return (
         <Component>
-            <Deal>
+            <Deal sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ width: 20, height: 40, bgcolor: '#DB4444', borderRadius: 1, marginRight: 1 }} />
+                <DealText sx={{color:'#DB4444', fontWeight:'500'}}>{slidecategory}</DealText>
+            </Deal>
+            <Deal sx={{ display: 'flex', alignItems: 'center' }}>
                 <DealText>{title}</DealText>
 
                 <ViewAllButton
@@ -42,29 +47,9 @@ const Slide = ({ products, title }) => {
                 itemClass="carousel-item-padding-40-px">
                 {
                     products.map((product, index) => (
-                        <Link key={index} to={`/product/view/${product._id}`} className='card'>
-                            <Box className="card-content">
-                                <Image src={product.productImage} alt={product.productName} className="card-image" />
-                                {product.isNew && <span className="badge">Új</span>}
-                                <TitleText className="card-title">{product.productName}</TitleText>
-                                    <Text className="card-cost">{formatNumber(product.price.cost)} ft</Text>
-
-                                {/*<TextContainer className="card-pricing">
-                                    <Text className="card-mrp">{product.price.mrp > product.price.cost ? `${product.price.mrp}ft` : ""}</Text>
-                                </TextContainer>*/}
-
-                                {product.price.mrp > product.price.cost && 
-                                    <Text className="card-discount-badge">
-                                        {`${product.price.discountPercent}% Kedvezmény`}
-                                    </Text>
-                                }
-                                <button className="card-button">MEGNÉZ</button>
-                            </Box>
+                        <Link key={index} to={`/product/view/${product._id}`} >
+                            <ProductCard key={index} product={product} />
                         </Link>
-
-
-
-
                     ))
                 }
             </Carousel>
@@ -108,43 +93,12 @@ const DealText = styled(Typography)`
 
 const ViewAllButton = styled(Button)`
     margin-left: auto;
-    background-color: #4d1c9c;
-    border-radius: 2px;
+    background-color: #DB4444;
     font-size: 13px;
+    padding: 16px 48px;
+    border-radius: 6px;
+
     &:hover {
-      background-color: #7a1ccb;
+        background-color: #cd1c1c;
     }
-`;
-
-const Image = styled('img')({
-    width: 'auto',
-    height: 150
-})
-
-const TitleText = styled(Typography)`
-    font-size: 14px;
-    margin-top: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-weight: 600;
-    color: #212121;
-    display: flex;
-    font-size: 1.1rem;
-`;
-
-const Text = styled(Typography)`
-    font-size: 14px;
-    margin-top: 5px
-    font-weight: 600;
-    margin: 0 0 20% 0;
-    font-size: 1rem;
-`
-
-const TextContainer = styled(Container)`
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
 `;

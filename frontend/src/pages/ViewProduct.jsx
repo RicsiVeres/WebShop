@@ -140,10 +140,10 @@ const ViewProduct = () => {
                                                 </Avatar>
                                                 <ReviewDetails>
                                                     <Typography variant="h6">{review.reviewer.name}</Typography>
-                                                    <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                                                        <Typography variant="body2">{timeAgo(review.date)}</Typography>
+                                                    <div style={{ display: 'block', alignItems: 'center', marginBottom: '1rem' }}>
+                                                        <Typography variant="body2" >{timeAgo(review.date)}</Typography>
+                                                        <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(productDetails.reviews)} precision={0.5}  />
                                                     </div>
-                                                    <Typography variant="subtitle1">Értékelés: {review.rating}</Typography>
                                                     <Typography variant="body1">{review.comment || "Nincs megjegyzés"}</Typography>
                                                 </ReviewDetails>
                                                 {review.reviewer._id === reviewer && (
