@@ -107,13 +107,15 @@ const ViewOrder = () => {
                                 {
                                     currentRole === "Customer" &&
                                     <>
-                                        <ButtonContainer>
-                                            <BasicButton
-                                                onClick={() => dispatch(addToCart(productDetails))}
-                                            >
-                                                Add to Cart
-                                            </BasicButton>
-                                        </ButtonContainer>
+                                        {/*
+                                            <ButtonContainer>
+                                                <BasicButton
+                                                    onClick={() => dispatch(addToCart(productDetails))}
+                                                >
+                                                    Add to Cart
+                                                </BasicButton>
+                                            </ButtonContainer>
+                                        */}
 
                                         <form onSubmit={handleSubmit}>
                                             <ReviewWritingContainer>

@@ -54,12 +54,12 @@ const CustomerOrders = () => {
                 <>
                     {responseSpecificProducts ?
                         <h1>
-                            No Orders Till Now
+                            Nincsenek még rendeléseid
                         </h1>
                         :
                         <Container>
                             <Typography sx={{ fontSize: 40, textAlign: "center" }}>
-                                My Orders
+                                 Rendeléseid
                             </Typography>
                             <Stack
                                 direction="row"

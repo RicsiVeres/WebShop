@@ -21,6 +21,15 @@ const ViewProduct = () => {
 
     const [anchorElMenu, setAnchorElMenu] = useState(null);
 
+    const getavgRating = (reviews) => {
+        if (!reviews || reviews.length === 0) {
+            return 0; // Ha nincs értékelés, az átlag 0
+        }
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return sum / reviews.length;
+    };
+
+
     const handleOpenMenu = (event) => {
         setAnchorElMenu(event.currentTarget);
     };
@@ -64,7 +73,7 @@ const ViewProduct = () => {
                                 <ProductInfo>
                                     <ProductName>{productDetails?.productName}</ProductName>
                                     <ProductRating>
-                                        <Rating name="half-rating" defaultValue={3.5} precision={0.5} /> (
+                                        <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(productDetails.reviews)} precision={0.5} /> (
                                         {productDetails.reviews ? productDetails.reviews.length : 0} Reviews) |{" "}
                                         <InStock quantity={productDetails?.quantity}> Raktáron</InStock>
                                     </ProductRating>
