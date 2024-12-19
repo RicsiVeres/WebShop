@@ -28,6 +28,14 @@ const initialState = {
     customersList: [],
 };
 
+const updateFavoritesInLocalStorage = (favorits) => {
+    try {
+        localStorage.setItem('favorits', JSON.stringify(favorits));
+    } catch (error) {
+        console.error('Failed to update favorites in localStorage:', error);
+    }
+}
+
 const updateCartDetailsInLocalStorage = (cartDetails) => {
     const currentUser = JSON.parse(localStorage.getItem('user')) || {};
     currentUser.cartDetails = cartDetails;
@@ -83,6 +91,32 @@ const userSlice = createSlice({
             state.error = null;
             state.isLoggedIn = true;
         },
+        removeFromFavorit: (state, action) => {
+            state.favorites = state.favorites.filter(item => item.id !== action.payload.id);
+        },
+        addToFavorit: (state, action) => {
+            // Check if the product is already in the favorites list
+            const existingFavorite = state.currentUser.favorits?.find(
+                (favoriteItem) => favoriteItem._id === action.payload._id
+            );
+
+            if (!existingFavorite) {
+                // Add the product to the favorites list if not already present
+                const newFavoriteItem = { ...action.payload };
+
+                if (!state.currentUser.favorits) {
+                    state.currentUser.favorits = []; // Initialize the favorites list if it doesn't exist
+                }
+
+                state.currentUser.favorits.push(newFavoriteItem);
+            }
+
+            
+
+            // Update the favorites in localStorage or any other persistent storage
+            updateFavoritesInLocalStorage(state.currentUser.favorits);
+        }
+        ,
         addToCart: (state, action) => {
             const existingProduct = state.currentUser.cartDetails.find(
                 (cartItem) => cartItem._id === action.payload._id
@@ -310,6 +344,8 @@ export const {
     specificProductSuccess,
 
     addToCart,
+    addToFavorit,
+    removeFromFavorit,
     removeFromCart,
     removeSpecificProduct,
     removeAllFromCart,

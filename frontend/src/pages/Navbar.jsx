@@ -24,6 +24,22 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const totalQuantity = currentUser?.cartDetails?.reduce((total, item) => total + item.quantity, 0) || 0;
+    const favoritsitemcounts = () => {
+        try {
+            const favorits = JSON.parse(localStorage.getItem('favorits')) || [];
+            if (!Array.isArray(favorits)) {
+                console.warn("The 'favorits' key in localStorage is not an array. Resetting to an empty array.");
+                localStorage.setItem('favorits', JSON.stringify([])); // Reset, ha nem tömb
+                return 0;
+            }
+            return favorits.length;
+        } catch (error) {
+            console.error("Error parsing 'favorits' from localStorage:", error);
+            localStorage.setItem('favorits', JSON.stringify([])); // Reset, ha hiba van
+            return 0;
+        }
+    };
+
 
     const toggleMobileMenu = () => {
         setMobileOpen(!mobileOpen);
@@ -44,6 +60,23 @@ const Navbar = () => {
     const handleNavigateToFavorites = () => {
         navigate("/favorites");
     };
+
+    const handleNavigateToContacts = () => {
+        navigate("/Contacts");
+        isMobile && setMobileOpen(!mobileOpen);
+    };
+
+    const handleNavigateToOrders = () => {
+            navigate("/Orders");
+            isMobile && setMobileOpen(!mobileOpen);
+        };
+
+    const handleNavigateToHome = () => {
+            navigate("/");
+            isMobile && setMobileOpen(!mobileOpen);
+        };
+
+
 
     return (
         <AppBar position="sticky" sx={{ backgroundColor: "#FFFFFF", boxShadow: "none", padding: ".5rem 2.5rem", maxWidth: "1170px", margin: "0 auto" }}>
@@ -66,8 +99,8 @@ const Navbar = () => {
 
                 {/* Desktop Menu */}
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: "1.5rem", alignItems: 'center' }}>
-                    <Button sx={menuButtonStyle}>Home</Button>
-                    <Button sx={menuButtonStyle}>Contact</Button>
+                    <Button sx={menuButtonStyle} onClick={handleNavigateToHome}>Home</Button>
+                    <Button sx={menuButtonStyle} onClick={handleNavigateToContacts}>Contact</Button>
                     <Button sx={menuButtonStyle}>About</Button>
                     {currentRole !== "Customer" ? (
                         <Button onClick={() => navigate("/Customerlogin")} sx={menuButtonStyle}>
@@ -80,7 +113,9 @@ const Navbar = () => {
                     {currentRole === "Customer" && (
                         <Box sx={{ display: 'flex', gap: "1rem", alignItems: 'center' }}>
                             <IconButton onClick={handleNavigateToFavorites}>
-                                <FavoriteBorderIcon sx={{ color: "#000000" }} />
+                                <Badge badgeContent={favoritsitemcounts()} color="error">
+                                    <FavoriteBorderIcon sx={{ color: "#000000" }} />
+                                </Badge>
                             </IconButton>
                             <IconButton onClick={handleOpenCart}>
                                 <Badge badgeContent={totalQuantity} color="error">
@@ -119,17 +154,17 @@ const Navbar = () => {
                 <Box>
                     <List>
                         <ListItem disablePadding>
-                            <ListItemButton onClick={() => navigate("/")}>
+                            <ListItemButton onClick={handleNavigateToHome}>
                                 <ListItemText primary="Home" />
                             </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
-                            <ListItemButton onClick={() => navigate("/Contact")}>
+                            <ListItemButton onClick={handleNavigateToContacts}>
                                 <ListItemText primary="Contact" />
                             </ListItemButton>
                         </ListItem>
                         <ListItem disablePadding>
-                            <ListItemButton onClick={() => navigate("/About")}>
+                            <ListItemButton >
                                 <ListItemText primary="About" />
                             </ListItemButton>
                         </ListItem>
@@ -143,7 +178,7 @@ const Navbar = () => {
                             </>
                         )}
                         <ListItem disablePadding>
-                            <ListItemButton onClick={() => navigate("/Orders")}>
+                            <ListItemButton onClick={handleNavigateToOrders}>
                                 <ListItemText primary="Rendeléseim" />
                             </ListItemButton>
                         </ListItem>

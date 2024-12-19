@@ -29,7 +29,6 @@ const ViewProduct = () => {
         return sum / reviews.length;
     };
 
-
     const handleOpenMenu = (event) => {
         setAnchorElMenu(event.currentTarget);
     };
@@ -54,7 +53,6 @@ const ViewProduct = () => {
             </Alert>
         }
     };
-
 
     const [PickQuantityCounterx, setPickQuantityCounterx] = useState(1);
 
@@ -91,7 +89,7 @@ const ViewProduct = () => {
                                         >
                                             -
                                         </Button>
-                                        <PickQuantityCounter>{PickQuantityCounterx}</PickQuantityCounter>
+                                        <PickQuantityCounter >{PickQuantityCounterx}</PickQuantityCounter>
                                             <Button
                                                 style={{ background: '#DB4444'}}
                                                 onClick={() => {
@@ -106,9 +104,9 @@ const ViewProduct = () => {
                                                 background: '#DB4444',
                                                 marginLeft: "16px",
                                                 fontSize:'1rem',
-                                                padding: '.8rem 1.5rem'
+                                                padding: '.8rem 1.5rem',
                                             }}
-                                               onClick={handleBuyNow}>
+                                                    onClick={handleBuyNow}>
                                                 Buy Now
                                             </Button>
                                     </PickQuantity>
@@ -216,7 +214,6 @@ const ProductContainer = styled.div`
     }
 `;
 
-
 const ProductImage = styled.img`
     max-width: 35vw;
     border-radius: 8px;
@@ -280,7 +277,6 @@ const PickQuantityCounter = styled.div`
     justify-content: center;
     padding: .8rem;
     border: 1px solid #ccc;
-
 `;
 
 const ReviewWritingContainer = styled.div`

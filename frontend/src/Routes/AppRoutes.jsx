@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from '../pages/Home';
+import Contact from '../pages/Contact';
 import ViewProduct from '../pages/ViewProduct';
 import Navbar from '../pages/Navbar';
 import AuthenticationPage from '../pages/AuthenticationPage';
@@ -12,6 +13,8 @@ import Profile from '../pages/customer/pages/Profile';
 import Logout from '../pages/Logout';
 import CheckoutAftermath from '../pages/customer/pages/CheckoutAftermath';
 import ViewOrder from '../pages/customer/pages/ViewOrder';
+import Favorites from "../pages/customer/pages/Favorites";
+import {Contacts} from "@mui/icons-material";
 
 const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
   return (
@@ -41,8 +44,10 @@ const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Home" element={<Home />} />
+            <Route path="/Contacts" element={<Contact />} />
             <Route path="*" element={<Navigate to="/" />} />
             <Route path="/Products" element={<Products productData={productData} />} />
+            <Route path="/favorites" element={<Favorites />} />
             <Route path="/product/view/:id" element={<ViewProduct />} />
             <Route path="/Search" element={<CustomerSearch mode="Mobile" />} />
             <Route path="/ProductSearch" element={<CustomerSearch mode="Desktop" />} />

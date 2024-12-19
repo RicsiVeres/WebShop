@@ -6,7 +6,7 @@ import "react-multi-carousel/lib/styles.css";
 import "./style/pages.css";
 import ProductCard from "./customer/components/ProductCard";
 
-const Slide = ({ products, title, slidecategory }) => {
+const Slide = ({ products, title, slidecategory, favoritcard }) => {
     const navigate = useNavigate()
 
     const formatNumber = (num) => {
@@ -31,28 +31,31 @@ const Slide = ({ products, title, slidecategory }) => {
             </Deal>
 
             <Divider />
+            <Box sx={{ maxWidth: '1100px', margin: '0 auto' }}>
+                <Carousel
+                    swipeable={false}
+                    draggable={false}
+                    responsive={responsive}
+                    centerMode={true}
+                    infinite={true}
+                    autoPlay={true}
+                    autoPlaySpeed={10000}
+                    keyBoardControl={true}
+                    showDots={false}
+                    containerClass="carousel-container"
+                    dotListClass="custom-dot-list-style"
+                    itemClass="carousel-item-padding-40-px"
+                >
+                    {
+                        products.map((product, index) => (
+                            <Link key={index} to={`/product/view/${product._id}`} >
+                                <ProductCard key={index} product={product} favoritcard={favoritcard}  />
+                            </Link>
+                        ))
+                    }
+                </Carousel>
+            </Box>
 
-            <Carousel
-                swipeable={false}
-                draggable={false}
-                responsive={responsive}
-                centerMode={true}
-                infinite={true}
-                autoPlay={true}
-                autoPlaySpeed={10000}
-                keyBoardControl={true}
-                showDots={false}
-                containerClass="carousel-container"
-                dotListClass="custom-dot-list-style"
-                itemClass="carousel-item-padding-40-px">
-                {
-                    products.map((product, index) => (
-                        <Link key={index} to={`/product/view/${product._id}`} >
-                            <ProductCard key={index} product={product} />
-                        </Link>
-                    ))
-                }
-            </Carousel>
         </Component>
     )
 }

@@ -4,7 +4,6 @@ import Slide from './Slide';
 import Banner from './Banner';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../redux/userHandle';
-import ProductsMenu from './customer/components/ProductsMenu';
 import { NewtonsCradle } from '@uiball/loaders';
 import { Link } from 'react-router-dom';
 
@@ -72,7 +71,7 @@ const Home = () => {
           ) : (
             <>
 
-              <Slide products={productData} title="Akciósak" slidecategory="This Month" />
+              <Slide products={productData} title="Akciósak" slidecategory="This Month"  />
               <Slide products={productData} title="Legkellendőbbek" slidecategory="Most Popular" />
               <Slide products={productData} title="Neked Ajánlott" slidecategory="Recommended" />
             </>
