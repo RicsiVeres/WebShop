@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../redux/userSlice';
+import {addToCart, removeFromCart} from '../redux/userSlice';
 import styled from 'styled-components';
-import { BasicButton } from '../utils/buttonStyles';
 import { getProductDetails, updateStuff } from '../redux/userHandle';
-import { Avatar, Card, IconButton, Menu, MenuItem, Typography } from '@mui/material';
+import {Alert, Avatar, Card, IconButton, Menu, MenuItem, Rating, Typography} from '@mui/material';
 import { generateRandomColor, timeAgo } from '../utils/helperFunctions';
 import { MoreVert } from '@mui/icons-material';
 
@@ -14,15 +13,21 @@ const ViewProduct = () => {
     const params = useParams();
     const productID = params.id;
 
-
     const { currentUser, currentRole, productDetails, loading, responseDetails } = useSelector(state => state.user);
 
     useEffect(() => {
         dispatch(getProductDetails(productID));
     }, [productID, dispatch]);
 
-
     const [anchorElMenu, setAnchorElMenu] = useState(null);
+
+    const getavgRating = (reviews) => {
+        if (!reviews || reviews.length === 0) {
+            return 0; // Ha nincs értékelés, az átlag 0
+        }
+        const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return sum / reviews.length;
+    };
 
     const handleOpenMenu = (event) => {
         setAnchorElMenu(event.currentTarget);
@@ -34,197 +39,222 @@ const ViewProduct = () => {
 
     const deleteHandler = (reviewId) => {
         const fields = { reviewId };
-
         dispatch(updateStuff(fields, productID, "deleteProductReview"));
     };
 
-    const reviewer = currentUser && currentUser._id
+    const reviewer = currentUser && currentUser._id;
+
+    const handleBuyNow = () => {
+        if (currentRole === "Customer") {
+            dispatch(addToCart(productDetails));
+        } else {
+            <Alert severity="success" color="warning">
+                Először be kell jelentkezned!
+            </Alert>
+        }
+    };
+
+    const [PickQuantityCounterx, setPickQuantityCounterx] = useState(1);
 
     return (
         <>
-            {loading ?
+            {loading ? (
                 <div>Betöltés...</div>
-                :
+            ) : (
                 <>
-                    {
-                        responseDetails ?
-                            <div>Nincs ilyen termékünk!</div>
-                            :
-                            <>
-                                <ProductContainer>
-                                    <ProductImage src={productDetails && productDetails.productImage} alt={productDetails && productDetails.productName} />
-                                    <ProductInfo>
-                                        <ProductName>{productDetails && productDetails.productName}</ProductName>
-                                        <PriceContainer>
-                                            <PriceCost>{productDetails && productDetails.price && productDetails.price.cost}ft</PriceCost>
-                                            <PriceMrp>{productDetails && productDetails.price && productDetails.price.mrp}ft</PriceMrp>
-                                            <PriceDiscount>{productDetails && productDetails.price && productDetails.price.discountPercent}% off</PriceDiscount>
-                                        </PriceContainer>
-                                        <Description>{productDetails && productDetails.description}</Description>
-                                        <ProductDetails>
-                                            <p>Kategória: {productDetails && productDetails.category}</p>
-                                            <p>Alkategória: {productDetails && productDetails.subcategory}</p>
-                                        </ProductDetails>
-                                            {currentRole != "Customer" ? <h2>Hogy a kosaraba helyezd jelentkezz be!</h2> : 
-                                                <ButtonContainer>
-                                                    <BasicButton
-                                                         onClick={() => dispatch(addToCart(productDetails))}
-                                                    >
-                                                        Kosárba
-                                                    </BasicButton>
-                                                </ButtonContainer> }
-                                    </ProductInfo>
-                                </ProductContainer>
-                                {
-                                    currentRole === "Customer" &&
-                                    <>
-                                        
-                                    </>
-                                }
-                                <ReviewWritingContainer>
-                                    <Typography variant="h4">Vélemények</Typography>
-                                </ReviewWritingContainer>
-
-                                {productDetails.reviews && productDetails.reviews.length > 0 ? (
-                                    <ReviewContainer>
-                                        {productDetails.reviews.map((review, index) => (
-                                            <ReviewCard key={index}>
-                                                <ReviewCardDivision>
-                                                    <Avatar sx={{ width: "60px", height: "60px", marginRight: "1rem", backgroundColor: generateRandomColor(review._id) }}>
-                                                        {String(review.reviewer.name).charAt(0)}
-                                                    </Avatar>
-                                                    <ReviewDetails>
-                                                        <Typography variant="h6">{review.reviewer.name}</Typography>
-                                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-
-                                                            <Typography variant="body2">
-                                                                {timeAgo(review.date)}
-                                                            </Typography>
-                                                        </div>
-                                                        <Typography variant="subtitle1">Értékelés: {review.rating}</Typography>
-                                                        <Typography variant="body1">{review.comment}</Typography>
-                                                    </ReviewDetails>
-                                                    {review.reviewer._id === reviewer &&
-                                                        <>
-                                                            <IconButton onClick={handleOpenMenu} sx={{ width: "4rem", color: 'inherit', p: 0 }}>
-                                                                <MoreVert sx={{ fontSize: "2rem" }} />
-                                                            </IconButton>
-                                                            <Menu
-                                                                id="menu-appbar"
-                                                                anchorEl={anchorElMenu}
-                                                                anchorOrigin={{
-                                                                    vertical: 'bottom',
-                                                                    horizontal: 'left',
-                                                                }}
-                                                                keepMounted
-                                                                transformOrigin={{
-                                                                    vertical: 'top',
-                                                                    horizontal: 'left',
-                                                                }}
-                                                                open={Boolean(anchorElMenu)}
-                                                                onClose={handleCloseMenu}
-                                                                onClick={handleCloseMenu}
-                                                            >
-                                                                <MenuItem onClick={() => {
-                                                                    handleCloseMenu()
-                                                                }}>
-                                                                    <Typography textAlign="center">Edit</Typography>
-                                                                </MenuItem>
-                                                                <MenuItem onClick={() => {
-                                                                    deleteHandler(review._id)
-                                                                    handleCloseMenu()
-                                                                }}>
-                                                                    <Typography textAlign="center">Delete</Typography>
-                                                                </MenuItem>
-                                                            </Menu>
-                                                        </>
+                    {responseDetails ? (
+                        <div>Nincs ilyen termékünk!</div>
+                    ) : (
+                        <>
+                            <ProductContainer>
+                                <ProductImage src={productDetails?.productImage} alt={productDetails?.productName} />
+                                <ProductInfo>
+                                    <ProductName>{productDetails?.productName}</ProductName>
+                                    <ProductRating>
+                                        <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(productDetails.reviews)} precision={0.5} /> (
+                                        {productDetails.reviews ? productDetails.reviews.length : 0} Reviews) |{" "}
+                                        <InStock quantity={productDetails?.quantity}> Raktáron</InStock>
+                                    </ProductRating>
+                                    <PriceCost>$ {productDetails?.price?.cost}</PriceCost>
+                                    <Description>{productDetails?.description}</Description>
+                                    <hr style={{ border: '1px solid gray', width: '100%' }} />
+                                    <PickQuantity>
+                                        <Button
+                                            style={{ color: '#333'}}
+                                            onClick={() => {
+                                                if (PickQuantityCounterx > 1) {
+                                                    setPickQuantityCounterx(PickQuantityCounterx - 1);
+                                                }
+                                            }}
+                                        >
+                                            -
+                                        </Button>
+                                        <PickQuantityCounter >{PickQuantityCounterx}</PickQuantityCounter>
+                                            <Button
+                                                style={{ background: '#DB4444'}}
+                                                onClick={() => {
+                                                    if (PickQuantityCounterx < 11) {
+                                                        setPickQuantityCounterx(PickQuantityCounterx + 1);
                                                     }
-                                                </ReviewCardDivision>
-                                            </ReviewCard>
-                                        ))}
-                                    </ReviewContainer>
-                                )
-                                    :
-                                    <ReviewWritingContainer>
-                                        <Typography variant="h6">Még nincs megjegyzés, rendeld meh és írj róla vélemyént elsőként!</Typography>
-                                    </ReviewWritingContainer>
-                                }
-                            </>
-                    }
+                                                }}
+                                            >
+                                                +
+                                            </Button>
+                                            <Button style={{
+                                                background: '#DB4444',
+                                                marginLeft: "16px",
+                                                fontSize:'1rem',
+                                                padding: '.8rem 1.5rem',
+                                            }}
+                                                    onClick={handleBuyNow}>
+                                                Buy Now
+                                            </Button>
+                                    </PickQuantity>
+                                    <ProductDetails>
+                                        <p>Kategória: {productDetails?.category}</p>
+                                        <p>Alkategória: {productDetails?.subcategory}</p>
+                                    </ProductDetails>
+                                </ProductInfo>
+                            </ProductContainer>
+
+                            <ReviewWritingContainer>
+                                <Typography variant="h4">Vélemények</Typography>
+                            </ReviewWritingContainer>
+
+                            {productDetails?.reviews && productDetails?.reviews.length > 0 ? (
+                                <ReviewContainer>
+                                    {productDetails.reviews.map((review, index) => (
+                                        <ReviewCard key={index}>
+                                            <ReviewCardDivision>
+                                                <Avatar
+                                                    sx={{
+                                                        width: '60px',
+                                                        height: '60px',
+                                                        marginRight: '1rem',
+                                                        backgroundColor: generateRandomColor(review._id),
+                                                    }}
+                                                >
+                                                    {String(review.reviewer.name).charAt(0)}
+                                                </Avatar>
+                                                <ReviewDetails>
+                                                    <Typography variant="h6">{review.reviewer.name}</Typography>
+                                                    <div style={{ display: 'block', alignItems: 'center', marginBottom: '1rem' }}>
+                                                        <Typography variant="body2" >{timeAgo(review.date)}</Typography>
+                                                        <Rating readOnly={true} name="half-rating" defaultValue={getavgRating(productDetails.reviews)} precision={0.5}  />
+                                                    </div>
+                                                    <Typography variant="body1">{review.comment || "Nincs megjegyzés"}</Typography>
+                                                </ReviewDetails>
+                                                {review.reviewer._id === reviewer && (
+                                                    <>
+                                                        <IconButton onClick={handleOpenMenu} sx={{ width: '4rem', color: 'inherit', p: 0 }}>
+                                                            <MoreVert sx={{ fontSize: '2rem' }} />
+                                                        </IconButton>
+                                                        <Menu
+                                                            id="menu-appbar"
+                                                            anchorEl={anchorElMenu}
+                                                            anchorOrigin={{
+                                                                vertical: 'bottom',
+                                                                horizontal: 'left',
+                                                            }}
+                                                            keepMounted
+                                                            transformOrigin={{
+                                                                vertical: 'top',
+                                                                horizontal: 'left',
+                                                            }}
+                                                            open={Boolean(anchorElMenu)}
+                                                            onClose={handleCloseMenu}
+                                                            onClick={handleCloseMenu}
+                                                        >
+                                                            <MenuItem onClick={() => handleCloseMenu()}>
+                                                                <Typography textAlign="center">Edit</Typography>
+                                                            </MenuItem>
+                                                            <MenuItem onClick={() => {
+                                                                deleteHandler(review._id);
+                                                                handleCloseMenu();
+                                                            }}>
+                                                                <Typography textAlign="center">Delete</Typography>
+                                                            </MenuItem>
+                                                        </Menu>
+                                                    </>
+                                                )}
+                                            </ReviewCardDivision>
+                                        </ReviewCard>
+                                    ))}
+                                </ReviewContainer>
+                            ) : (
+                                <ReviewWritingContainer>
+                                    <Typography variant="h6">
+                                        Még nincs megjegyzés, rendeld meg és írj róla véleményt elsőként!
+                                    </Typography>
+                                </ReviewWritingContainer>
+                            )}
+                        </>
+                    )}
                 </>
-            }
+            )}
         </>
     );
 };
 
 export default ViewProduct;
+
+// Styled Components
 const ProductContainer = styled.div`
     display: flex;
     flex-direction: column;
     margin: 20px;
     justify-content: center;
     align-items: center;
-    background-color: #f9f9f9; /* Világos szürke háttér */
+    background-color: #f9f9f9;
     padding: 40px;
-    border-radius: 12px; /* Finoman lekerekített sarkok */
+    border-radius: 12px;
+
     @media (min-width: 768px) {
         flex-direction: row;
     }
 `;
 
 const ProductImage = styled.img`
-    max-width: 350px; /* Nagyobb, de még mindig arányos kép */
-    border-radius: 8px; /* Finomabb lekerekítés */
+    max-width: 35vw;
+    border-radius: 8px;
     margin-bottom: 20px;
 `;
 
 const ProductInfo = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Balra igazított szöveg a jobb olvashatóságért */
-    gap: 2rem; /* Kicsit több térköz a különböző elemek között */
+    align-items: flex-start;
+    gap: 16px;
     margin-left: 2.5rem;
 `;
 
-const ProductName = styled.h1`
-    font-size: 28px;
-    color: #333; /* Sötétebb szöveg a jobb kontraszt érdekében */
-    margin-bottom: 10px;
-    font-weight: 600;
-`;
-
-const PriceContainer = styled.div`
+const ProductRating = styled.div`
     display: flex;
-    gap: 16px;
     align-items: center;
-    background-color: #ffffff; /* Fehér háttér a tiszta megjelenéshez */
-    padding: 15px;
-    border-radius: 8px; /* Finom lekerekítés */
-    border: 1px solid #e0e0e0; /* Világos szürke keret */
+    font-size: 14px;
+    color: #666;
 `;
 
-const PriceMrp = styled.p`
-    font-size: 14px;
-    color: #b0b0b0;
-    text-decoration: line-through;
+const InStock = styled.p`
+    color: ${props => (props.quantity > 1 ? '#0db45d' : 'orange')};
+`;
+
+const ProductName = styled.h1`
+    font-size: 24px;
+    color: #333;
+    font-weight: 600;
 `;
 
 const PriceCost = styled.h3`
     font-size: 24px;
-    color: #222; /* Erősebb szín a fő árhoz */
-`;
-
-const PriceDiscount = styled.p`
-    font-size: 14px;
-    color: #43a047; /* Zöld szín a kedvezményhez */
-    font-weight: bold;
+    font-weight: 400;
+    color: #222;
 `;
 
 const Description = styled.p`
     font-size: 16px;
-    color: #555; /* Szürke a hosszabb szöveghez */
-    line-height: 1.6; /* Kellemesebb olvasási élmény */
-    margin-top: 16px;
+    color: #555;
+    line-height: 1.4;
 `;
 
 const ProductDetails = styled.div`
@@ -235,16 +265,23 @@ const ProductDetails = styled.div`
     font-size: 14px;
 `;
 
-const ButtonContainer = styled.div`
-    margin-top: 20px;
+const PickQuantity = styled.div`
     display: flex;
-    justify-content: flex-start; /* Bal oldalon elhelyezkedő gomb */
+    justify-content: center;
+    align-items: center;
 `;
 
+const PickQuantityCounter = styled.div`
+    width: 75px;
+    display: flex;
+    justify-content: center;
+    padding: .8rem;
+    border: 1px solid #ccc;
+`;
 
 const ReviewWritingContainer = styled.div`
     margin: 60px 0;
-    text-align: center; /* Középre igazított szöveg */
+    text-align: center;
 `;
 
 const ReviewContainer = styled.div`
@@ -254,23 +291,34 @@ const ReviewContainer = styled.div`
 `;
 
 const ReviewCard = styled(Card)`
-  && {
-    background-color: #fafafa;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 16px;
-    padding: 16px;
-    border-radius: 10px;
-  }
+    && {
+        background-color: #fafafa;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 10px;
+    }
 `;
 
 const ReviewCardDivision = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 `;
 
 const ReviewDetails = styled.div`
-  flex: 1;
-  color: #444;
+    flex: 1;
+    color: #444;
 `;
-
+const Button = styled.button`
+    && {
+        background-color: #ffffff;
+        border: 1px solid gray;
+        color: #fff;
+        padding: 10px 20px;
+        border: 1px solid #c8c8c8;
+        cursor: pointer;
+        font-size: 24px;
+        padding: .5rem 1rem;
+    }
+`;

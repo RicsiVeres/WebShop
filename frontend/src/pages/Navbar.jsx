@@ -1,47 +1,50 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import {
-    AppBar, Box, Toolbar, IconButton, Typography, Menu, Container, Button, Tooltip, MenuItem, Badge, Drawer, Avatar, Divider, ListItemIcon
+    AppBar, Toolbar, IconButton, Typography, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemText, Divider, Badge
 } from '@mui/material';
-import { Search as SearchIcon, LocalMall as LocalMallIcon, ShoppingCart as ShoppingCartIcon, Login, Logout, Shop2, Store } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { styled } from 'styled-components';
-import Cart from './customer/components/Cart';
+import {
+    Menu as MenuIcon,
+    Close as CloseIcon,
+    FavoriteBorder as FavoriteBorderIcon,
+    ShoppingCartOutlined as ShoppingCartOutlinedIcon,
+    Person2Outlined as Person2OutlinedIcon
+} from '@mui/icons-material';
+import { styled } from '@mui/system';
 import Search from './customer/components/Search';
-import ProductsMenu from './customer/components/ProductsMenu';
-import { updateCustomer } from '../redux/userHandle';
-import { FavoriteBorder as FavoriteBorderIcon } from '@mui/icons-material';
-import { Person2Outlined as  Person2OutlinedIcon} from '@mui/icons-material';
-import { ShoppingCartOutlined as   ShoppingCartOutlinedIcon} from '@mui/icons-material';
-import { ContactPageOutlined as  ContactPageOutlinedIcon  } from '@mui/icons-material';
-import { ShoppingCart } from '@mui/icons-material';
-
+import Cart from './customer/components/Cart';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useMediaQuery } from '@mui/material';
 
 const Navbar = () => {
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const isMobile = useMediaQuery('(max-width:600px)'); // Mobil nézet detektálása
     const { currentUser, currentRole } = useSelector(state => state.user);
+    const navigate = useNavigate();
 
-    const totalQuantity = currentUser && currentUser.cartDetails && currentUser.cartDetails.reduce((total, item) => total + item.quantity, 0);
-
-    const navigate = useNavigate()
-    const dispatch = useDispatch();
-
-    React.useEffect(() => {
-        if (currentRole === "Customer") {
-            console.log(currentUser);
-            dispatch(updateCustomer(currentUser, currentUser._id));
+    const totalQuantity = currentUser?.cartDetails?.reduce((total, item) => total + item.quantity, 0) || 0;
+    const favoritsitemcounts = () => {
+        try {
+            const favorits = JSON.parse(localStorage.getItem('favorits')) || [];
+            if (!Array.isArray(favorits)) {
+                console.warn("The 'favorits' key in localStorage is not an array. Resetting to an empty array.");
+                localStorage.setItem('favorits', JSON.stringify([])); // Reset, ha nem tömb
+                return 0;
+            }
+            return favorits.length;
+        } catch (error) {
+            console.error("Error parsing 'favorits' from localStorage:", error);
+            localStorage.setItem('favorits', JSON.stringify([])); // Reset, ha hiba van
+            return 0;
         }
-    }, [currentRole, currentUser, dispatch])
+    };
 
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
-    const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [anchorElSign, setAnchorElSign] = React.useState(null);
 
-    const open = Boolean(anchorElUser);
-    const openSign = Boolean(anchorElSign);
+    const toggleMobileMenu = () => {
+        setMobileOpen(!mobileOpen);
+    };
 
-    const [isCartOpen, setIsCartOpen] = React.useState(false);
-
-    // Cart
     const handleOpenCart = () => {
         setIsCartOpen(true);
     };
@@ -50,214 +53,207 @@ const Navbar = () => {
         setIsCartOpen(false);
     };
 
-    // Navigation Menu
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
+    const handleNavigateToProfile = () => {
+        navigate("/profile");
     };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
+    const handleNavigateToFavorites = () => {
+        navigate("/favorites");
     };
 
-    // User Menu
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
+    const handleNavigateToContacts = () => {
+        navigate("/Contacts");
+        isMobile && setMobileOpen(!mobileOpen);
     };
 
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
+    const handleNavigateToOrders = () => {
+            navigate("/Orders");
+            isMobile && setMobileOpen(!mobileOpen);
+        };
 
-    // Signin Menu
-    const handleOpenSigninMenu = (event) => {
-        setAnchorElSign(event.currentTarget);
-    };
+    const handleNavigateToHome = () => {
+            navigate("/");
+            isMobile && setMobileOpen(!mobileOpen);
+        };
 
-    const handleCloseSigninMenu = () => {
-        setAnchorElSign(null);
-    };
 
-    const homeHandler = () => {
-        navigate("/")
-    };
 
     return (
-        <AppBar position="sticky" sx={{ backgroundColor: "#FFFFFF", boxShadow: "none", padding: "0 2rem" }}>
-  <Container maxWidth="xl">
-    <Toolbar disableGutters>
-      {/* Logo styling */}
-      <Typography
-        variant="h6"
-        noWrap
-        sx={{
-          flexGrow: 1,
-          display: 'flex',
-          color: "#000000",
-          fontWeight: "bold",
-          fontSize: "1.5rem",
-        }}
-        onClick={ ()=> navigate("/")}
-      >
-        Exclusive
-      </Typography>
-
-      {/* Menu items styling */}
-      <Box sx={{ display: 'flex', gap: "1.5rem", alignItems: 'center' }}>
-        <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Home</Button>
-        <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Contact</Button>
-        <Button sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>About</Button>
-        {currentRole == "Customer" ? 
-            ""
-                :
-            <Button onClick={() => navigate("/Customerlogin")} sx={{ color: "#000000", textTransform: "none", fontWeight: "bold", fontSize: "1rem" }}>Sign Up</Button>
-        }
-
-        
-
-      </Box>
-
-      {/* Search Bar */}
-      <Search
-        sx={{
-          borderRadius: "5px",
-          backgroundColor: "#7D8184",
-          padding: "0.5rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1rem",
-          marginLeft: "2rem"
-        }}
-      />
-
-      {/* Icons styling */}
-      {currentRole === "Customer" && (
-        <Box sx={{ display: 'flex', gap: "1rem", alignItems: 'center' }}>
-        <IconButton>
-            <FavoriteBorderIcon  sx={{ color: "#000000" }}/>
-        </IconButton>
-        <IconButton>
-        <Badge badgeContent={totalQuantity} color="error">
-          <ShoppingCartOutlinedIcon sx={{ color: "#000000" }} onClick={handleOpenCart} />
-        </Badge>
-        </IconButton>
-        <IconButton>
-            <Box sx={{ flexGrow: 0, display: 'flex' }}>
-                            
-                            <Tooltip title="Account settings">
-                                <IconButton
-                                    onClick={handleOpenUserMenu}
-                                >
-                                    <Person2OutlinedIcon sx={{ color: "#000000", fontSize: "xl" }}  />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu
-                                anchorEl={anchorElUser}
-                                id="menu-appbar"
-                                open={open}
-                                onClose={handleCloseUserMenu}
-                                onClick={handleCloseUserMenu}
-                                PaperProps={{
-                                    elevation: 0,
-                                    sx: styles.styledPaper,
-                                }}
-                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                            >
-                                <MenuItem onClick={() => navigate("/Profile")}>
-                                    {/* <Avatar fontSize="small" /> */}
-                                    <ListItemIcon>
-                                        <ContactPageOutlinedIcon />
-                                    </ListItemIcon>
-                                    <Link to="/Profile">
-                                        Adatlap
-                                    </Link>
-                                </MenuItem>
-                                <MenuItem onClick={() => navigate("/Orders")}>
-                                    <ListItemIcon>
-                                        <Shop2 fontSize="small" />
-                                    </ListItemIcon>
-                                    <Link to="/Orders">
-                                        Rendeléseim
-                                    </Link>
-                                </MenuItem>
-                                <Divider />
-                                <MenuItem onClick={() => navigate("/Logout")}>
-                                    <ListItemIcon>
-                                        <Logout fontSize="small" />
-                                    </ListItemIcon>
-                                    <Link to="/Logout">
-                                        Kilépés
-                                    </Link>
-                                </MenuItem>
-                            </Menu>
-                        </Box>
-        </IconButton>
-      </Box>
-      )}
-      {
-                isCartOpen &&
-                <Drawer
-                    anchor="right"
-                    open={isCartOpen}
-                    onClose={handleCloseCart}
+        <AppBar position="sticky" sx={{ backgroundColor: "#FFFFFF", boxShadow: "none", padding: ".5rem 2.5rem", maxWidth: "1170px", margin: "0 auto" }}>
+            <Toolbar disableGutters>
+                {/* Logo */}
+                <Typography
+                    variant="h6"
+                    noWrap
                     sx={{
-                        width: '45vw',
-                        flexShrink: 0,
-                        '& .MuiDrawer-paper': {
-                            width: '45vw',
-                            boxSizing: 'border-box',
-                        },
+                        flexGrow: 1,
+                        color: "#000000",
+                        fontWeight: "bold",
+                        fontSize: "1.5rem",
+                        cursor: "pointer"
+                    }}
+                    onClick={() => navigate("/")}
+                >
+                    Exclusive
+                </Typography>
+
+                {/* Desktop Menu */}
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: "1.5rem", alignItems: 'center' }}>
+                    <Button sx={menuButtonStyle} onClick={handleNavigateToHome}>Home</Button>
+                    <Button sx={menuButtonStyle} onClick={handleNavigateToContacts}>Contact</Button>
+                    <Button sx={menuButtonStyle}>About</Button>
+                    {currentRole !== "Customer" ? (
+                        <Button onClick={() => navigate("/Customerlogin")} sx={menuButtonStyle}>
+                            Sign Up
+                        </Button>
+                    ):
+                        <Button sx={menuButtonStyle} onClick={() => navigate("/Orders")}>Rendeléseim</Button>
+                    }
+                    <Search sx={searchBarStyle} />
+                    {currentRole === "Customer" && (
+                        <Box sx={{ display: 'flex', gap: "1rem", alignItems: 'center' }}>
+                            <IconButton onClick={handleNavigateToFavorites}>
+                                <Badge badgeContent={favoritsitemcounts()} color="error">
+                                    <FavoriteBorderIcon sx={{ color: "#000000" }} />
+                                </Badge>
+                            </IconButton>
+                            <IconButton onClick={handleOpenCart}>
+                                <Badge badgeContent={totalQuantity} color="error">
+                                    <ShoppingCartOutlinedIcon sx={{ color: "#000000" }} />
+                                </Badge>
+                            </IconButton>
+                            <IconButton onClick={handleNavigateToProfile}>
+                                <Person2OutlinedIcon sx={{ color: "#000000" }} />
+                            </IconButton>
+                        </Box>
+                    )}
+                </Box>
+
+                {/* Hamburger Menu Button */}
+                <IconButton
+                    sx={{ display: { xs: 'flex', md: 'none',  }, color: "#000000" }}
+                    onClick={toggleMobileMenu}
+                >
+                    {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+                </IconButton>
+            </Toolbar>
+
+            {/* Mobile Drawer */}
+            <Drawer
+                anchor="top"
+                open={mobileOpen}
+                onClose={toggleMobileMenu}
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        backgroundColor: "#FFFFFF",
+                        padding: "1rem",
+                        animation: "slideIn 0.3s ease-out"
+                    }
+                }}
+            >
+                <Box>
+                    <List>
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={handleNavigateToHome}>
+                                <ListItemText primary="Home" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={handleNavigateToContacts}>
+                                <ListItemText primary="Contact" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem disablePadding>
+                            <ListItemButton >
+                                <ListItemText primary="About" />
+                            </ListItemButton>
+                        </ListItem>
+                        {currentRole !== "Customer" && (
+                            <>
+                                <ListItem disablePadding>
+                                    <ListItemButton onClick={() => navigate("/Customerlogin")}>
+                                        <ListItemText primary="Sign Up" />
+                                    </ListItemButton>
+                                </ListItem>
+                            </>
+                        )}
+                        <ListItem disablePadding>
+                            <ListItemButton onClick={handleNavigateToOrders}>
+                                <ListItemText primary="Rendeléseim" />
+                            </ListItemButton>
+                        </ListItem>
+                        <Divider />
+                        <Box sx={{ padding: "1rem 0", width: "100vw" }}>
+                            <Search />
+                        </Box>
+                    </List>
+                </Box>
+            </Drawer>
+
+            {/* Cart Drawer */}
+            <Drawer
+                anchor="right"
+                open={isCartOpen}
+                onClose={handleCloseCart}
+                sx={{
+                    '& .MuiDrawer-paper': {
+                        width: isMobile ? '95vw' : '45vw',
+                        boxSizing: 'border-box',
+                    },
+                }}
+            >
+                <Cart setIsCartOpen={setIsCartOpen} />
+            </Drawer>
+
+            {/* Sticky Footer Buttons for Mobile */}
+            {currentRole === "Customer" && (
+                <Box
+                    sx={{
+                        display: { xs: 'flex', md: 'none' },
+                        justifyContent: 'space-between',
+                        Width: '100vw',
+                        alignItems: 'center',
+                        position: 'fixed',
+                        bottom: 0,
+                        left: 0,
+                        width: '100vw',
+                        padding: "1rem",
+                        backgroundColor: "#FFFFFF",
+                        boxShadow: "0 -2px 5px rgba(0,0,0,0.1)"
                     }}
                 >
-                    <Cart setIsCartOpen={setIsCartOpen} />
-                </Drawer>
-            }
-    </Toolbar>
-  </Container>
-</AppBar>
+                    <IconButton onClick={handleNavigateToFavorites}>
+                        <FavoriteBorderIcon sx={{ color: "#000000" }} />
+                    </IconButton>
+                    <IconButton onClick={handleOpenCart}>
+                        <Badge badgeContent={totalQuantity} color="error">
+                            <ShoppingCartOutlinedIcon sx={{ color: "#000000" }} />
+                        </Badge>
+                    </IconButton>
+                    <IconButton onClick={handleNavigateToProfile}>
+                        <Person2OutlinedIcon sx={{ color: "#000000", marginRight: "2.5rem" }} />
+                    </IconButton>
+                </Box>
+            )}
+        </AppBar>
     );
 };
 
-export default Navbar;
-
-const HomeContainer = styled(Box)`
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-`;
-
-const NavLogo = styled(Link)`
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1.5rem;
-    cursor: pointer;
-
-    &:hover {
-        color: #e07575;
-    }
-`;
-
-const styles = {
-    styledPaper: {
-        elevation: 0,
-        sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-            mt: 1.5,
-            '&:before': {
-                content: '""',
-                display: 'block',
-                position: 'absolute',
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: 'background.paper',
-                transform: 'translateY(-50%) rotate(45deg)',
-                zIndex: 0,
-            },
-        },
-    },
+const menuButtonStyle = {
+    color: "#000000",
+    textTransform: "none",
+    fontWeight: "bold",
+    fontSize: "1rem",
 };
 
+const searchBarStyle = {
+    borderRadius: "5px",
+    backgroundColor: "#7D8184",
+    padding: "0.5rem",
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+    marginLeft: "2rem",
+};
+
+export default Navbar;

@@ -89,7 +89,7 @@ const Cart = ({ setIsCartOpen }) => {
                                             {/* Quantity Control using MUI IconButton */}
                                             <QuantityControl>
                                                 <IconButton 
-                                                    onClick={() => handleQuantityChange(data, data.quantity - 1)} 
+                                                    onClick={() => handleQuantityChange(data, data.quantity - 1)}
                                                     disabled={data.quantity <= 0}  // Disable the minus button when quantity is 1
                                                 >
                                                     <RemoveIcon />
@@ -171,7 +171,6 @@ const StyledSummaryBox = styled(Paper)`
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
-  background-color: #363738;
   margin: 1rem 8%;
 `;
 

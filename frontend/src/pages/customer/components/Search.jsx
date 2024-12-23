@@ -43,13 +43,13 @@ const Search = () => {
 }
 
 const SearchContainer = styled(Box)`
-  border-radius: 2px;
-  margin-left: 10rem;
-  margin-right: 2rem;
-  width: 38%;
-  background-color: #F5F5F5;
-  max-width: 20vw;
-  display: flex;
+    border-radius: 2px;
+    margin: 0 auto;
+    width: 38%;
+    max-width: 65vw;
+    min-width: 250px;
+    display: flex;
+    border: 1px solid rgba(119, 119, 119, 0.24);
 `;
 
 const SearchIconWrapper = styled(Box)`

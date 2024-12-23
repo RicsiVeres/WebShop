@@ -4,9 +4,9 @@ import Slide from './Slide';
 import Banner from './Banner';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../redux/userHandle';
-import ProductsMenu from './customer/components/ProductsMenu';
 import { NewtonsCradle } from '@uiball/loaders';
 import { Link } from 'react-router-dom';
+import Category from "../components/Category";
 
 const Home = () => {
 
@@ -31,7 +31,7 @@ const Home = () => {
   }, [error]);
 
   return (
-    <div id="top">
+    <div id="top" style={{ maxWidth: "1170px", margin: "0 auto" }}>
       <Container
         sx={{
           display: 'none',
@@ -39,9 +39,10 @@ const Home = () => {
             display: 'flex',
           },
         }}
-      >
-        <ProductsMenu dropName="Categories" />
+      >{/*
+        <ProductsMenu dropName="Categories" /> //a 2 filtert kivettem mivel jelenleg nincs rá szükség
         <ProductsMenu dropName="Products" />
+      */}
       </Container>
       <BannerBox>
         <Banner />
@@ -70,12 +71,11 @@ const Home = () => {
             </>
           ) : (
             <>
-              <Slide products={productData} title="Akciósak" />
-              <Slide products={productData} title="Legkellendőbbek" />
-              <Slide products={productData} title="Neked Ajánlott" />
-              <Slide products={productData} title="Deals of the Day" />
-              <Slide products={productData} title="Suggested Items" />
-              <Slide products={productData} title="Recommended Items" />
+
+              <Slide products={productData} title="Akciósak" slidecategory="This Month"  />
+                <Category />
+              <Slide products={productData} title="Legkellendőbbek" slidecategory="Most Popular" />
+              <Slide products={productData} title="Neked Ajánlott" slidecategory="Recommended" />
             </>
           )}
         </>
@@ -98,26 +98,3 @@ const BannerBox = styled(Box)`
   padding: 20px 10px;
   background: #F2F2F2;
 `;
-
-const Component = styled(Box)`
-  display: flex;
-`;
-
-const LeftComponent = styled(Box)(({ theme }) => ({
-  width: '83%',
-  [theme.breakpoints.down('md')]: {
-    width: '100%',
-  },
-}));
-
-const RightComponent = styled(Box)(({ theme }) => ({
-  marginTop: 10,
-  background: '#FFFFFF',
-  width: '17%',
-  marginLeft: 10,
-  padding: 5,
-  textAlign: 'center',
-  [theme.breakpoints.down('md')]: {
-    display: 'none',
-  },
-}));
