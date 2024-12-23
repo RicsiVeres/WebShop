@@ -61,6 +61,7 @@ function Footer() {
 
 export default Footer;
 
+
 // Stílusok a különböző elemekhez
 const FooterContainer = styled(Box)`
     background-color: #000000;
