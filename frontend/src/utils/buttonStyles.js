@@ -3,16 +3,53 @@ import { Button } from '@mui/material';
 
 export const RedButton = styled(Button)`
   && {
-    background-color: #f00;
+    background-color: #DB4444;
+    width: 234px;
+    height: 56px;
     color: white;
-    margin-left: 4px;
+    padding: 16px 48px;
+      font-size: 12px;
     &:hover {
-      background-color: #eb7979;
-      border-color: #f26767;
+      background-color: #E07575;
       box-shadow: none;
     }
   }
 `;
+
+export const SmallBtn = styled(Button)`
+  && {
+    background-color: #DB4444;
+    width: 192px;
+    height: 44px;
+    color: white;
+    padding: 10px 48px;
+      font-size: 10px;
+    &:hover {
+      background-color: #E07575;
+      box-shadow: none;
+    }
+  }
+`;
+
+export const SecondaryBtn = styled(Button)`
+    && {
+        background-color: rgba(255, 255, 255, 0);
+        width: 234px;
+        height: 56px;
+        color: black;
+        padding: 16px 48px;
+        font-size: 12px;
+        border: 1px solid #000000;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0);
+            color: #7D8184;
+            box-shadow: none;
+            border: 1px solid #7D8184
+        }
+    }
+`;
+
 
 export const BlackButton = styled(Button)`
   && {

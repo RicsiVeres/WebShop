@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const Customer = require('../models/customerSchema.js');
 const { createNewToken } = require('../utils/token.js');
+const nodemailer = require('nodemailer');
 
 const customerRegister = async (req, res) => {
     try {
@@ -89,9 +90,42 @@ const cartUpdate = async (req, res) => {
     }
 }
 
+const nodemail = async (req, res) => {
+    const nodemailer = require('nodemailer');
+
+
+    // SMTP transporter létrehozása Gmail-hez
+    var transporter = nodemailer.createTransport({
+        service: "gmail", // Gmail szolgáltatás
+        auth: {
+            user: "veresricsi150@gmail.com", // A saját Outlook címed
+            pass: "ftvz vhea fxeh bfyh" //alkalmazásjelszó            
+        }
+    });
+
+    // E-mail opciók beállítása
+    const mailOptions = {
+        from: req.body.email,   // Küldő e-mail címe
+        to: 'veresricsi116@gmail.com',   // Címzett e-mail címe
+        subject: req.body.subject,         // Tárgy
+        text: req.body.text // Tartalom
+    };
+
+    // E-mail elküldése
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Hiba történt:', error);
+        } else {
+            console.log('E-mail elküldve:', info.response);
+        }
+    });
+
+};
+
 module.exports = {
     customerRegister,
     customerLogIn,
     getCartDetail,
     cartUpdate,
+    nodemail,
 };

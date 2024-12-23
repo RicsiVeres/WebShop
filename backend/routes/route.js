@@ -28,7 +28,8 @@ const {
     customerRegister,
     customerLogIn,
     getCartDetail,
-    cartUpdate
+    cartUpdate,
+    nodemail
 } = require('../controllers/customerController.js');
 
 const {
@@ -69,6 +70,7 @@ router.post('/CustomerRegister', customerRegister);
 router.post('/CustomerLogin', customerLogIn);
 router.get('/getCartDetail/:id', getCartDetail);
 router.put('/CustomerUpdate/:id', cartUpdate);
+router.post('/nodemail', nodemail);
 
 // Order
 router.post('/newOrder', newOrder);

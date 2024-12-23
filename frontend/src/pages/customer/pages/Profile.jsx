@@ -1,12 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Paper, Typography, Avatar, Container } from '@mui/material';
+import {Paper, Typography, Avatar, Container, Button} from '@mui/material';
 import ShippingPage from '../components/ShippingPage';
+import {useNavigate} from "react-router-dom";
 
 const Profile = () => {
   const { currentUser } = useSelector(state => state.user);
-
+  const navigate = useNavigate();
   return (
     <React.Fragment>
       <ProfileContainer>
@@ -25,6 +26,7 @@ const Profile = () => {
           <ProfileText variant="h6">
             Role : {currentUser ? currentUser.role : ''}
           </ProfileText>
+          <Button variant="contained" sx={{backgroundColor:"rgba(255,53,53,0.85)", marginTop:"1.5rem"}} onClick={() => navigate("/Logout")}>Kijelentkezés!</Button>
         </ProfileHeader>
       </ProfileContainer>
       <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>

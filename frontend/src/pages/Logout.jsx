@@ -77,12 +77,13 @@ const LogoutButton = styled.button`
 const LogoutButtonLogout = styled(LogoutButton)`
   background-color: #d63031; /* Enyhén piros */
   &:hover {
-    background-color: #c0392b; /* Sötétebb piros hover hatásra */
+    background-color: rgba(255,53,53,0.85); /* Sötétebb piros hover hatásra */
   }
 `;
 
 const LogoutButtonCancel = styled(LogoutButton)`
-  background-color: #0984e3; /* Kék szín a visszavonás gombhoz */
+  background-color: rgba(13, 107, 181, 0.84); /* Kék szín a visszavonás gombhoz */
+
   &:hover {
     background-color: #74b9ff; /* Világosabb kék hover hatásra */
   }

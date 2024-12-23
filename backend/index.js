@@ -11,7 +11,13 @@ const PORT = process.env.PORT || 5000
 dotenv.config();
 
 app.use(express.json({ limit: '10mb' }))
-app.use(cors())
+//app.use(cors())
+
+app.use(cors({
+    origin: ['http://192.168.0.102:3000', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 mongoose
     .connect(process.env.MONGO_URL, {
