@@ -72,7 +72,7 @@ const ProductCard = ({ product, favoritcard }) => {
                 position: 'relative',
                 borderRadius: 0,
                 overflow: 'hidden',
-                boxShadow: 3,
+                boxShadow: 0,
                 marginLeft: 1,
                 marginRight: 1,
             }}

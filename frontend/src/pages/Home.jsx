@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProducts } from '../redux/userHandle';
 import { NewtonsCradle } from '@uiball/loaders';
 import { Link } from 'react-router-dom';
+import Category from "../components/Category";
 
 const Home = () => {
 
@@ -72,6 +73,7 @@ const Home = () => {
             <>
 
               <Slide products={productData} title="Akciósak" slidecategory="This Month"  />
+                <Category />
               <Slide products={productData} title="Legkellendőbbek" slidecategory="Most Popular" />
               <Slide products={productData} title="Neked Ajánlott" slidecategory="Recommended" />
             </>
