@@ -25,8 +25,9 @@ import {
     specificProductSuccess,
     updateCurrentUser,
 } from './userSlice';
-
-const REACT_APP_BASE_URL = "http://192.168.0.102:5000";
+const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
+//const REACT_APP_BASE_URL = "http://192.168.0.102:5000";
+//const REACT_APP_BASE_URL = "http://localhost:5000";
 
 export const authUser = (fields, role, mode) => async (dispatch) => {
     dispatch(authRequest());

@@ -27,8 +27,8 @@ function Footer() {
 
                 <Section>
                     <Heading2>Account</Heading2>
-                    <Link href="#">My Account</Link>
-                    <Link href="#">Login / Register</Link>
+                    <Link href="/profile">My Account</Link>
+                    <Link href="/Customerlogin">Login / Register</Link>
                     <Link href="#">Cart</Link>
                     <Link href="#">Wishlist</Link>
                     <Link href="#">Shop</Link>
@@ -39,7 +39,7 @@ function Footer() {
                     <Link href="#">Privacy Policy</Link>
                     <Link href="#">Terms Of Use</Link>
                     <Link href="#">FAQ</Link>
-                    <Link href="#">Contact</Link>
+                    <Link href="/Contacts">Contact</Link>
                 </Section>
 
                 <AppDownload>

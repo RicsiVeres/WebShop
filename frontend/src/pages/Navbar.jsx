@@ -9,7 +9,6 @@ import {
     ShoppingCartOutlined as ShoppingCartOutlinedIcon,
     Person2Outlined as Person2OutlinedIcon
 } from '@mui/icons-material';
-import { styled } from '@mui/system';
 import Search from './customer/components/Search';
 import Cart from './customer/components/Cart';
 import { useNavigate } from 'react-router-dom';
@@ -66,6 +65,12 @@ const Navbar = () => {
         isMobile && setMobileOpen(!mobileOpen);
     };
 
+    const handleNavigateToAbout = () => {
+        navigate("/About");
+        isMobile && setMobileOpen(!mobileOpen);
+    };
+
+
     const handleNavigateToOrders = () => {
             navigate("/Orders");
             isMobile && setMobileOpen(!mobileOpen);
@@ -101,7 +106,7 @@ const Navbar = () => {
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: "1.5rem", alignItems: 'center' }}>
                     <Button sx={menuButtonStyle} onClick={handleNavigateToHome}>Home</Button>
                     <Button sx={menuButtonStyle} onClick={handleNavigateToContacts}>Contact</Button>
-                    <Button sx={menuButtonStyle}>About</Button>
+                    <Button sx={menuButtonStyle} onClick={handleNavigateToAbout}>About</Button>
                     {currentRole !== "Customer" ? (
                         <Button onClick={() => navigate("/Customerlogin")} sx={menuButtonStyle}>
                             Sign Up
@@ -165,7 +170,7 @@ const Navbar = () => {
                         </ListItem>
                         <ListItem disablePadding>
                             <ListItemButton >
-                                <ListItemText primary="About" />
+                                <ListItemText onClick={handleNavigateToAbout} primary="About" />
                             </ListItemButton>
                         </ListItem>
                         {currentRole !== "Customer" && (

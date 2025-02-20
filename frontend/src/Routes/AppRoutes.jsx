@@ -15,6 +15,7 @@ import CheckoutAftermath from '../pages/customer/pages/CheckoutAftermath';
 import ViewOrder from '../pages/customer/pages/ViewOrder';
 import Favorites from "../pages/customer/pages/Favorites";
 import Footer from "../pages/Footer";
+import About from "../pages/About";
 
 const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
   return (
@@ -23,9 +24,11 @@ const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
         <>
           <Navbar />
             <Routes>
+              <Route path="*" element={<Navigate to="/" />} />
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="/About" element={<About />} />
+              <Route path="/Contacts" element={<Contact />} />
               <Route path="/Products" element={<Products productData={productData} />} />
               <Route path="/product/view/:id" element={<ViewProduct />} />
               <Route path="/Search" element={<CustomerSearch mode="Mobile" />} />
@@ -45,6 +48,7 @@ const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/Home" element={<Home />} />
+              <Route path="/About" element={<About />} />
               <Route path="/Contacts" element={<Contact />} />
               <Route path="*" element={<Navigate to="/" />} />
               <Route path="/Products" element={<Products productData={productData} />} />

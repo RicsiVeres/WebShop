@@ -2,7 +2,7 @@ import { Box, TextField, useMediaQuery } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
 import { RedButton } from "../utils/buttonStyles";
-import iconmail  from "../assets/icon-mail.png";
+import iconmail from "../assets/icon-mail.png";
 
 function Contact() {
     const isMobile = useMediaQuery("(max-width:768px)");
@@ -46,19 +46,33 @@ function Contact() {
                 alignItems: "flex-start",
                 maxWidth: "1170px",
                 margin: "140px auto",
-                padding: isMobile ? "0 20px" : "0 8%",
+                padding: isMobile ? "0 5%" : "0 8%",
+                boxSizing: 'border-box',
+                width: '100%',
+                overflowX: 'hidden'
             }}
         >
-            <Box>
+
+            {/* Left Content */}
+            <Box sx={{
+                width: isMobile ? '100%' : 'auto',
+                margin: isMobile ? '0 auto' : '0',
+                maxWidth: isMobile ? '100%' : 'none',
+                padding: isMobile ? '0 20px' : '0',
+                boxSizing: 'border-box'
+            }}>
                 <Box
                     sx={{
                         width: "100%",
                         marginBottom: isMobile ? "24px" : "0",
-                        display: "block",
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <img src={iconmail} alt="mail-icon" style={{ width: "15%" }} />
+                        <img
+                            src={iconmail}
+                            alt="mail-icon"
+                            style={{ width: isMobile ? "10%" : "15%" }}
+                        />
                         <h3 style={{ marginLeft: "16px", fontWeight: "500" }}>Call To Us</h3>
                     </Box>
                     <Box sx={{ display: "block", marginTop: "24px" }}>
@@ -69,11 +83,10 @@ function Contact() {
 
                 <hr
                     style={{
-                        color: "#000000",
+                        width: '100%',
                         backgroundColor: "#000000",
                         height: 0.01,
-                        margin: "32px 0 32px 1rem",
-                        maxWidth: "270px",
+                        margin: "32px 0",
                     }}
                 />
 
@@ -84,10 +97,19 @@ function Contact() {
                     }}
                 >
                     <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <img src={iconmail} alt="mail-icon" style={{ width: "15%" }} />
+                        <img
+                            src={iconmail}
+                            alt="mail-icon"
+                            style={{ width: isMobile ? "10%" : "15%" }}
+                        />
                         <h3 style={{ marginLeft: "16px", fontWeight: "500" }}>Write To Us</h3>
                     </Box>
-                    <Box sx={{ display: "block", marginTop: "24px", maxWidth: "270px" }}>
+                    <Box sx={{
+                        display: "block",
+                        marginTop: "24px",
+                        maxWidth: "270px",
+                        width: '100%'
+                    }}>
                         <p>Fill out our form and we will contact you within 24 hours.</p>
                         <p style={{ margin: "16px 0" }}>Emails: customer@exclusive.com</p>
                         <p>Emails: support@exclusive.com</p>
@@ -95,21 +117,23 @@ function Contact() {
                 </Box>
             </Box>
 
+            {/* Right Form */}
             <Box
                 sx={{
                     maxWidth: "737px",
-                    display: "block",
-                    margin: isMobile ? "0" : "0 auto",
-                    width: "100%",
+                    width: '100%',
+                    margin: isMobile ? '0 auto' : "3rem",
+                    padding: isMobile ? "2.5rem 20px" : "0",
+                    boxSizing: 'border-box',
                 }}
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} >
                     <Box
                         sx={{
                             flexGrow: 1,
                             display: "flex",
                             flexDirection: isMobile ? "column" : "row",
-                            justifyContent: "space-between",
+                            justifyContent: isMobile ? "space-between" : "flex-end",
                             gap: isMobile ? "16px" : "0",
                         }}
                     >
@@ -142,24 +166,26 @@ function Contact() {
                             onChange={handleChange}
                         />
                     </Box>
-
-                    <TextField
-                        name="message"
-                        label="Your Message"
-                        multiline
-                        rows={8}
-                        variant="standard"
-                        required
-                        fullWidth
-                        value={formData.message}
-                        onChange={handleChange}
-                        sx={{ width: "100%", marginTop: "32px", marginBottom: "32px" }}
-                    />
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: "32px" }}>
-                        <RedButton type="submit" >
-                            Send Message
-                        </RedButton>
+                    <Box>
+                        <TextField
+                            name="message"
+                            label="Your Message"
+                            multiline
+                            rows={8}
+                            variant="standard"
+                            required
+                            fullWidth
+                            value={formData.message}
+                            onChange={handleChange}
+                            sx={{ width: "100%", marginTop: "32px", marginBottom: "32px" }}
+                        />
+                        <Box sx={{ display: "flex", justifyContent: isMobile ? "center" : "flex-end" , marginTop: "32px" }}>
+                            <RedButton type="submit">
+                                Send Message
+                            </RedButton>
+                        </Box>
                     </Box>
+
                 </form>
             </Box>
         </Box>
