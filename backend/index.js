@@ -14,7 +14,7 @@ app.use(express.json({ limit: '10mb' }))
 //app.use(cors())
 
 app.use(cors({
-    origin: ['http://192.168.0.102:3000', 'http://localhost:3000','https://webshop-client-kp2x.onrender.com'],
+    origin: ['http://192.168.0.102:3000', 'http://localhost:3000','https://webshop-client-kp2x.onrender.com'], // cors allowed origins
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
