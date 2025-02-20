@@ -25,7 +25,8 @@ import {
     specificProductSuccess,
     updateCurrentUser,
 } from './userSlice';
-const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
+//const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
+const REACT_APP_BASE_URL = "https://webshop-zfra.onrender.com";
 //const REACT_APP_BASE_URL = "http://192.168.0.102:5000";
 //const REACT_APP_BASE_URL = "http://localhost:5000";
 
