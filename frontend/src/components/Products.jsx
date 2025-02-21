@@ -34,7 +34,7 @@ const Products = ({ productData }) => {
 
   return (
       <>
-        <ProductGrid container spacing={4} sx={{ maxWidth: "1024px", display: "flex", margin: "5% auto" }}>
+        <ProductGrid container spacing={4} >
           {currentItems.map((data, index) => (
               <Grid item xs={12} sm={6} md={4} lg={3} xl={3} key={index} onClick={() => navigate("/product/view/" + data._id)} sx={{ cursor: "pointer" }}>
                 <ProductCard product={data} favoritcard={false} />
@@ -60,9 +60,14 @@ const Products = ({ productData }) => {
 export default Products;
 
 const ProductGrid = styled(Grid)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    @media (max-width: 768px) {
+        overflow-x: hidden;
+    }
 `;
+

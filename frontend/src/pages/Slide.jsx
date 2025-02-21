@@ -1,4 +1,4 @@
-import { Divider, Box, Typography, Button, styled } from '@mui/material';
+import {Divider, Box, Typography, Button, styled, useMediaQuery} from '@mui/material';
 
 import { Link, useNavigate } from 'react-router-dom';
 import Carousel from 'react-multi-carousel';
@@ -13,6 +13,7 @@ const Slide = ({ products, title, slidecategory, favoritcard }) => {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       };
 
+    const isMobile = useMediaQuery('(max-width:600px)'); // Mobil nézet detektálása
     return (
         <Component>
             <Deal sx={{ display: 'flex', alignItems: 'center' }}>
@@ -93,14 +94,12 @@ const DealText = styled(Typography)`
     line-height: 32px;
     margin-right: 25px;
 `
-
 const ViewAllButton = styled(Button)`
     margin-left: auto;
     background-color: #DB4444;
     font-size: 13px;
-    padding: 16px 48px;
+    padding: ${props => props.isMobile ? "16px 48px" : "8px 24px"};
     border-radius: 6px;
-
     &:hover {
         background-color: #cd1c1c;
     }

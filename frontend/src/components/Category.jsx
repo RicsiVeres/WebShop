@@ -74,14 +74,13 @@ export function CategoryBox({ data }) {
         </StyledCategoryBox>
     );
 }
-
 const StyledCategoryBox = styled(Box)`
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 170px; /* Fixált szélesség */
-    height: 145px; /* Fixált magasság */
+    width: 170px; /* Fixált szélesség asztali nézetben */
+    height: 145px; /* Fixált magasság asztali nézetben */
     border: 1px solid rgba(0, 0, 0, 0.3);
     margin: 0 15px;
     cursor: pointer;
@@ -96,7 +95,17 @@ const StyledCategoryBox = styled(Box)`
     &:hover img {
         filter: invert(1);
     }
+
+    /* Mobil nézet beállítások: egyszerre maximum 3 kártya */
+    @media (max-width: 768px) {
+        flex: 0 0 calc((100vw - 40px) / 3); /* a konténer belső margóját is figyelembe véve */
+        max-width: calc((100vw - 40px) / 3);
+        height: 120px;
+        margin: 0 5px;
+    }
 `;
+
+
 
 const Image = styled("img")`
     width: 56px;
