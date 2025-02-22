@@ -17,6 +17,7 @@ import Favorites from "../pages/customer/pages/Favorites";
 import Footer from "../pages/Footer";
 import About from "../pages/About";
 
+
 const AppRoutes = ({ isLoggedIn, currentRole, productData }) => {
   return (
     <>

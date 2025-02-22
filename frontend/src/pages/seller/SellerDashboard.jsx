@@ -161,9 +161,7 @@ const SellerDashboard = () => {
                             </>
                         }
 
-                        <Route path="/Seller/orders" element={<ShowOrders />} />
-                        <Route path="/Seller/orders/customers/:id" element={<ShowCustomers />} />
-                        <Route path="/Seller/orders/product/:id" element={<ViewProductSeller />} />
+                        <Route path="/Seller/orders" element={<ShowOrders />} /> {/*ez a sorr kell nekem */}
 
                         <Route path="/logout" element={<Logout />} />
                     </Routes>
