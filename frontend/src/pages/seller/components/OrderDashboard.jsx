@@ -82,7 +82,7 @@ const OrderDashboard = ({ orders: initialOrders }) => {
             style: "currency",
             currency: "HUF",
         }).format(price);
-
+//
     const filteredOrders = useMemo(() => {
         const searchTerm = filters.search.toLowerCase();
         return orders.filter((order) => {
