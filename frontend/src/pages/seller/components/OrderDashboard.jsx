@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { format } from "date-fns";
 import hu from "date-fns/locale/hu";
-import { FiCalendar, FiEdit, FiFilter, FiSearch, FiX } from "react-icons/fi";
+import { FiCalendar, FiEdit, FiFilter, FiSearch, FiX, FiPhone, FiMapPin } from "react-icons/fi";
 
 const OrderDashboard = ({ orders: initialOrders }) => {
     const [orders, setOrders] = useState(initialOrders);
@@ -90,7 +90,7 @@ const OrderDashboard = ({ orders: initialOrders }) => {
                 order.orderedProducts.some((product) =>
                     product.productName.toLowerCase().includes(searchTerm)
                 ) ||
-                order.buyerDetails[0]?.name?.toLowerCase().includes(searchTerm) ||
+                order.buyerDetails[0]?.name.toLowerCase().includes(searchTerm) ||
                 order._id.toLowerCase().includes(searchTerm);
 
             const matchesStatus =
@@ -171,7 +171,6 @@ const OrderDashboard = ({ orders: initialOrders }) => {
                         <FiX size={16} /> Szűrők törlése
                     </ResetButton>
                 </FilterGroup>
-
             </FilterBar>
 
             {error && <GlobalErrorMessage>{error}</GlobalErrorMessage>}
@@ -184,59 +183,97 @@ const OrderDashboard = ({ orders: initialOrders }) => {
                 {filteredOrders.map((order) => (
                     <OrderCard key={order._id}>
                         <CardHeader>
-                            <OrderId>#{order._id.slice(-6)}</OrderId>
+                            <OrderMeta>
+                                <OrderId>#{order._id.slice(-6)}</OrderId>
+                                <OrderDate>
+                                    <FiCalendar size={14} />
+                                    {format(new Date(order.createdAt), "yyyy. MMM dd. HH:mm", { locale: hu })}
+                                </OrderDate>
+                            </OrderMeta>
+
                             <StatusContainer>
                                 {loadingId === order._id ? (
-                                    <LoadingText>Frissítés...</LoadingText>
+                                    <LoadingBadge>Frissítés...</LoadingBadge>
                                 ) : (
-                                    <>
-                                        <StatusSelect
-                                            value={order.orderStatus}
-                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                            disabled={loadingId === order._id}
-                                        >
-                                            {statusOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </StatusSelect>
-                                        <EditIcon />
-                                    </>
+                                    <StatusSelect
+                                        value={order.orderStatus}
+                                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                        status={order.orderStatus.toLowerCase()}
+                                    >
+                                        {statusOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </StatusSelect>
                                 )}
                             </StatusContainer>
                         </CardHeader>
 
-                        <CustomerInfo>
-                            <CustomerName>
-                                {order.buyerDetails[0]?.name || "Ismeretlen vásárló"}
-                            </CustomerName>
-                            <OrderDate>
-                                {format(new Date(order.createdAt), "yyyy. MMMM dd. HH:mm", {
-                                    locale: hu,
-                                })}
-                            </OrderDate>
-                        </CustomerInfo>
+                        <CustomerSection>
+                            <CustomerHeader>
+                                <CustomerAvatar>
+                                    {order.buyerDetails[0]?.name.charAt(0) || '?'}
+                                </CustomerAvatar>
+                                <CustomerInfo>
+                                    <CustomerName>
+                                        {order.buyerDetails[0]?.name || "Ismeretlen vásárló"}
+                                    </CustomerName>
+                                    <PaymentStatus>
+                                        {order.paymentInfo?.status === 'Successful' ? '💸 Fizetve' : '⏳ Fizetésre vár'}
+                                    </PaymentStatus>
+                                </CustomerInfo>
+                            </CustomerHeader>
 
-                        <ProductList>
+                            <ContactGrid>
+                                <ContactItem>
+                                    <ContactIcon>
+                                        <FiPhone size={18} />
+                                    </ContactIcon>
+                                    <ContactText>
+                                        <ContactLabel>Telefonszám</ContactLabel>
+                                        {order.shippingData?.phoneNo}
+                                    </ContactText>
+                                </ContactItem>
+
+                                <ContactItem>
+                                    <ContactIcon>
+                                        <FiMapPin size={18} />
+                                    </ContactIcon>
+                                    <ContactText>
+                                        <ContactLabel>Szállítási cím</ContactLabel>
+                                        {order.shippingData?.city}, {order.shippingData?.address}
+                                    </ContactText>
+                                </ContactItem>
+                            </ContactGrid>
+                        </CustomerSection>
+
+                        <ProductTable>
+                            <TableHeader>
+                                <TableHeaderItem>Termék</TableHeaderItem>
+                                <TableHeaderItem>Egységár</TableHeaderItem>
+                                <TableHeaderItem>Mennyiség</TableHeaderItem>
+                            </TableHeader>
+
                             {order.orderedProducts.map((product) => (
-                                <ProductItem key={product._id}>
-                                    <ProductImage
-                                        src={product.productImage}
-                                        alt={product.productName}
-                                    />
-                                    <ProductDetails>
-                                        <ProductName>{product.productName}</ProductName>
-                                        <ProductMeta>
-                                            <Price>{formatPrice(product.price.cost)}</Price>
-                                            <Quantity>{product.quantity} db</Quantity>
-                                        </ProductMeta>
-                                    </ProductDetails>
-                                </ProductItem>
+                                <TableRow key={product._id}>
+                                    <ProductInfo>
+                                        <ProductImage src={product.productImage} alt={product.productName} />
+                                        <ProductDetails>
+                                            <ProductName>{product.productName}</ProductName>
+                                            <ProductCategory>{product.category}</ProductCategory>
+                                        </ProductDetails>
+                                    </ProductInfo>
+                                    <ProductPrice>{formatPrice(product.price.cost)}</ProductPrice>
+                                    <ProductQuantity>{product.quantity} db</ProductQuantity>
+                                </TableRow>
                             ))}
-                        </ProductList>
+                        </ProductTable>
 
-                        <TotalPrice>Összesen: {formatPrice(order.totalPrice)}</TotalPrice>
+                        <TotalPrice>
+                            <TotalLabel>Végösszeg:</TotalLabel>
+                            <TotalAmount>{formatPrice(order.totalPrice)}</TotalAmount>
+                        </TotalPrice>
                     </OrderCard>
                 ))}
             </OrderGrid>
@@ -249,11 +286,11 @@ const DashboardContainer = styled.div`
     max-width: 1440px;
     margin: 0 auto;
     padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: #f8fafc;
     min-height: 100vh;
 `;
+
 const FilterBar = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -279,7 +316,6 @@ const FilterBar = styled.div`
         padding: 1rem;
     }
 `;
-
 
 const FilterGroup = styled.div`
     display: flex;
@@ -307,36 +343,27 @@ const FilterGroup = styled.div`
 
 const SearchInput = styled.input`
     flex: 1;
-    padding: 0.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
     transition: all 0.2s;
 
     &:focus {
         outline: none;
         border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
-
-    &::placeholder {
-        color: #94a3b8;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
 `;
 
 const Select = styled.select`
-    padding: 0.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    background: white;
-    font-size: 1rem;
-    cursor: pointer;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
     width: 100%;
-    transition: all 0.2s;
-
-    &:hover {
-        border-color: #94a3b8;
-    }
+    background: white;
+    cursor: pointer;
 `;
 
 const DateInput = styled.input`
@@ -346,12 +373,10 @@ const DateInput = styled.input`
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: 1rem;
-    max-width: 175px;
 
-    @media (max-width: 769px) {
+    @media (max-width: 480px) {
         padding: 0.65rem;
         font-size: 0.9rem;
-        max-width: 100%;
     }
 `;
 
@@ -379,37 +404,40 @@ const ResetButton = styled.button`
 
 const ResultsInfo = styled.div`
     color: #64748b;
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 2rem;
     text-align: center;
 `;
 
 const GlobalErrorMessage = styled.div`
-    margin: 1rem 0;
     padding: 1rem;
     background: #fee2e2;
     color: #b91c1c;
-    border-radius: 8px;
+    border-radius: 12px;
+    margin: 1rem 0;
     text-align: center;
-    font-size: 0.9rem;
 `;
 
 const OrderGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 2rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const OrderCard = styled.div`
-    background: #ffffff;
+    background: white;
     border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 1.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: transform 0.2s;
 
     &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
     }
 `;
 
@@ -419,97 +447,181 @@ const CardHeader = styled.div`
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 2px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+`;
+
+const OrderMeta = styled.div`
+    display: grid;
+    gap: 0.25rem;
 `;
 
 const OrderId = styled.span`
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #64748b;
     font-weight: 500;
 `;
 
-const StatusContainer = styled.div`
-    position: relative;
+const OrderDate = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    width: 180px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+`;
+
+const StatusContainer = styled.div`
+    position: relative;
 `;
 
 const StatusSelect = styled.select`
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 2px solid #e2e8f0;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
-    background: white;
-    font-size: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     appearance: none;
-    transition: all 0.2s;
-
-    &:hover {
-        border-color: #94a3b8;
-    }
-
-    &:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-    }
+    border: 1px solid;
+    background: ${props =>
+    props.status === 'succes' ? '#f0fdf4' :
+        props.status === 'processing' ? '#fff7ed' :
+            '#fee2e2'};
+    color: ${props =>
+    props.status === 'succes' ? '#16a34a' :
+        props.status === 'processing' ? '#ea580c' :
+            '#dc2626'};
+    border-color: ${props =>
+    props.status === 'succes' ? '#86efac' :
+        props.status === 'processing' ? '#fdba74' :
+            '#fca5a5'};
 `;
 
-const EditIcon = styled(FiEdit)`
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
+const LoadingBadge = styled.div`
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: #f1f5f9;
     color: #64748b;
-    pointer-events: none;
+    font-size: 0.85rem;
 `;
 
-const LoadingText = styled.span`
-    color: #64748b;
-    font-size: 0.9rem;
-    font-style: italic;
+const CustomerSection = styled.div`
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
 `;
 
-const CustomerInfo = styled.div`
-    margin-bottom: 2rem;
-`;
-
-const CustomerName = styled.div`
-    font-size: 1.25rem;
-    color: #1e293b;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-`;
-
-const OrderDate = styled.div`
-    font-size: 0.9rem;
-    color: #64748b;
-`;
-
-const ProductList = styled.div`
+const CustomerHeader = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1.5rem;
 `;
 
-const ProductItem = styled.div`
+const CustomerAvatar = styled.div`
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e2e8f0;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1rem 0;
-    border-bottom: 2px solid #f1f5f9;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #475569;
+`;
 
-    &:last-child {
-        border-bottom: none;
-    }
+const CustomerInfo = styled.div`
+    flex: 1;
+`;
+
+const CustomerName = styled.div`
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+`;
+
+const PaymentStatus = styled.div`
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+`;
+
+const ContactGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+`;
+
+const ContactItem = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+`;
+
+const ContactIcon = styled.div`
+    padding: 0.75rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: flex;
+    color: #64748b;
+`;
+
+const ContactText = styled.div`
+    flex: 1;
+`;
+
+const ContactLabel = styled.div`
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 0.25rem;
+`;
+
+const ProductTable = styled.div`
+    margin: 2rem 0;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    overflow: hidden;
+`;
+
+const TableHeader = styled.div`
+    display: flex;
+    padding: 1rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #f1f5f9;
+    font-weight: 500;
+    color: #64748b;
+`;
+
+const TableHeaderItem = styled.div`
+    flex: 1;
+    &:nth-child(1) { flex: 2; }
+`;
+
+const TableRow = styled.div`
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    &:last-child { border-bottom: none; }
+`;
+
+const ProductInfo = styled.div`
+    flex: 2;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 `;
 
 const ProductImage = styled.img`
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
     object-fit: contain;
     border-radius: 8px;
-    border: 2px solid #f1f5f9;
+    border: 1px solid #f1f5f9;
 `;
 
 const ProductDetails = styled.div`
@@ -517,37 +629,42 @@ const ProductDetails = styled.div`
 `;
 
 const ProductName = styled.div`
-    font-size: 1.1rem;
-    color: #1e293b;
     font-weight: 500;
-    margin-bottom: 0.5rem;
+    color: #1e293b;
 `;
 
-const ProductMeta = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-const Price = styled.span`
-    color: #10b981;
-    font-weight: 600;
-    font-size: 1.1rem;
-`;
-
-const Quantity = styled.span`
+const ProductCategory = styled.div`
+    font-size: 0.8rem;
     color: #64748b;
-    font-size: 0.9rem;
+`;
+
+const ProductPrice = styled.div`
+    flex: 1;
+    text-align: center;
+`;
+
+const ProductQuantity = styled.div`
+    flex: 1;
+    text-align: center;
 `;
 
 const TotalPrice = styled.div`
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid #f1f5f9;
-    font-size: 1.25rem;
-    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    font-weight: 600;
     color: #1e293b;
-    text-align: right;
+`;
+
+const TotalLabel = styled.span`
+    font-size: 1rem;
+`;
+
+const TotalAmount = styled.span`
+    font-size: 1.2rem;
 `;
 
 export default OrderDashboard;
